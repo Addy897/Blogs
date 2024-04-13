@@ -2,7 +2,9 @@
     import {marked} from "marked";
     import { onMount } from "svelte";
     import { browser } from '$app/environment';
+	import ShowLoading from "../../lib/components/showLoading.svelte";
 
+    let loading =false;
     let markdownTitle = "";
     let markdownContent = "";
     let htmlContent = "";
@@ -51,7 +53,7 @@
     };
     const removeImage = (index) => {
       images = images.filter((_, i) => i !== index);
-      files = files.filter((_, i) => i !== index);
+      f = f.filter((_, i) => i !== index);
       updateMarkdown();
     };
   
@@ -84,6 +86,7 @@
         reader.readAsDataURL(file);
   };
     const handlePublish = async (event) => {
+      loading=true;
       event.preventDefault();
       const formData=new FormData();
       formData.append("length",f.length);
@@ -108,12 +111,15 @@
             }
             
         });
+        loading=false;
         if(browser && !error){
             window.location.href="/";
         }
         
     }
     const handleDraft = async (event) => {
+      loading=true;
+
       event.preventDefault();
       const formData=new FormData();
       formData.append("length",f.length);
@@ -138,6 +144,7 @@
             }
             
         });
+        loading=false;
         if(browser && !error){
             window.location.href="/";
         }
@@ -158,7 +165,11 @@
   
     
   </style>
-  
+  {#if loading}
+  <div class="flex flex-col items-center">
+      <ShowLoading/>
+  </div>
+  {:else}
   <div class="flex flex-col items-center">
     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2" on:click={toggleToolbox}>
       {toolboxVisible ? 'Hide Toolbox' : 'Show Toolbox'}
@@ -235,4 +246,4 @@
       {helpVisible ? 'Hide Help' : 'Show Help'}
     </button>
   </div>
-  
+  {/if}
