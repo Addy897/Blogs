@@ -101,13 +101,14 @@
 		{#if markdownMode}
 			<form class="flex flex-col items-center w-full p-4">
 				<div class="flex justify-between w-full sm:w-auto mb-10">
-					{#if md!==markdownContent}
+					{#if md!==markdownContent || blog.status==="Draft"}
 						<button
 							type="button"
 							class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mr-2"
 							on:click={pub}>Publish</button
 						>
-					
+					{/if}
+					{#if md!==markdownContent}
 					<button
 						type="button"
 						class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 ml-2"
