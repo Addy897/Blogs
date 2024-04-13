@@ -293,8 +293,7 @@ static async addGoogle(guser){
         
       })
     }).then(async (respo) => {
-      var t=await respo.text()
-      console.log(t)
+      
       var response = await respo.json();
       
       blog=response.response;
