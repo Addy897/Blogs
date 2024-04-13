@@ -12,12 +12,12 @@
     {#if blog && typeof(blog)==='object'}
 
         <h1>{blog.title}</h1>
-        <div class="flex flex-col justify-center items-center"><p class=" text-lg  font-bold flex flex-row gap-2 items-center"><span class="font-light">By:&nbsp</span>{blog.name}<img
+        <div class="flex flex-col justify-center items-center"><p class=" text-lg  font-bold flex flex-row gap-2 items-center"><span class="font-light">By:&nbsp</span><img
             class="rounded-full h-7"
             src={blog.pfPhoto}
             alt=""
             referrerpolicy="no-referrer"
-        /><span class="inline-flex font-normal text-sm">Premium{blog.level}</span></p><p>Published On:&nbsp{new Date(blog.date).toUTCString()}</p></div>
+        />{blog.name}<span class="inline-flex font-normal text-sm">Premium{blog.level}</span></p><p>Published On:&nbsp{new Date(blog.date).toUTCString()}</p></div>
         {@html blog.content}
         <button on:click={()=>{showComments=!showComments}}>{showComments?"Hide Comments \u2191":"Show Comments \u2193"}</button>
         {#if showComments}
