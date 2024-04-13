@@ -34,7 +34,20 @@ function getText(content){
 	}
 	$: currentPage = Pages[0];
 			let files;
-			
+	function getImg(el){
+        let html;
+        if(browser){
+            html=document.createElement('html')
+            html.innerHTML=el
+            let imgs = html.getElementsByTagName("img")
+            if(imgs.length){
+                return String(imgs[0].src)
+            }
+            else{
+                return "https://flowbite.com/docs/images/blog/image-1.jpg"
+            }
+        }
+    }
 	$:if(files){
 				let total=0;
 				for(let i=0;i<files.length;i++){
@@ -77,7 +90,7 @@ function getText(content){
 						<div class="max-w-lg mx-auto">
 							<div class="bg-white shadow-md border border-gray-200 rounded-lg max-w-sm mb-5">
 								<a href=" ">
-									<img class="rounded-t-lg" src="https://flowbite.com/docs/images/blog/image-1.jpg" alt="">
+									<img class="rounded-t-lg" src={getImg(draft.content)} alt="">
 								</a>
 								<div class="p-5 h-full">
 									<a href=" ">
@@ -134,7 +147,7 @@ function getText(content){
 						<div class="max-w-lg mx-auto">
 							<div class="bg-white shadow-md border border-gray-200 rounded-lg max-w-sm mb-5">
 								<a href=" ">
-									<img class="rounded-t-lg" src="https://flowbite.com/docs/images/blog/image-1.jpg" alt="">
+									<img class="rounded-t-lg" src={getImg(draft.content)} alt="">
 								</a>
 								<div class="p-5 h-full">
 									<a href=" ">
