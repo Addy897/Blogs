@@ -7,7 +7,7 @@ def sanitize_src(tag, name, value):
         return None
     return value
 def m2h(data:str) -> str:
-    md = Markdown(extensions=["pymarkdown-video", "extra"])
+    md = Markdown(extensions=["extra"])
     tags = {
         'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'div', 'iframe'
     }
