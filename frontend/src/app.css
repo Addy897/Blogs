@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 *{
-    font-family: cursive,monospace;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ,monospace
    
   }
   /* This Source Code Form is subject to the terms of the Mozilla Public

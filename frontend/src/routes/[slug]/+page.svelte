@@ -8,16 +8,17 @@
 </script>
 
 
-<section class="flex flex-col justify-center items-center w-full gap-5 pt-24">
+<section class="flex flex-col justify-center items-center w-full gap-5 md:pt-24">
     {#if blog && typeof(blog)==='object'}
-
-        <h1>{blog.title}</h1>
-        <div class="flex flex-col justify-center items-center"><p class=" text-lg  font-bold flex flex-row gap-2 items-center"><span class="font-light">By:&nbsp</span><img
-            class="rounded-full h-7"
-            src={blog.pfPhoto}
-            alt=""
-            referrerpolicy="no-referrer"
-        />{blog.name}<span class="inline-flex font-normal text-sm">Premium{blog.level}</span></p><p>Published On:&nbsp{new Date(blog.date).toUTCString()}</p></div>
+        
+            <h1 class="flex flex-col justify-center items-center gap-0">{blog.title}<div class="flex flex-col justify-center items-center"><p class=" text-lg  font-bold flex flex-row gap-2 items-center"><span class="font-light">By:&nbsp</span><img
+                class="rounded-full h-7"
+                src={blog.pfPhoto}
+                alt=""
+                referrerpolicy="no-referrer"
+            />{blog.name}<span class="inline-flex font-normal text-sm">Premium{blog.level}</span></p><span class="font-normal text-sm">Published On:&nbsp{new Date(blog.date).toDateString()}&nbsp{new Date(blog.date).toLocaleTimeString()}</span></div>
+        </h1>
+            
         {@html blog.content}
         <button on:click={()=>{showComments=!showComments}}>{showComments?"Hide Comments \u2191":"Show Comments \u2193"}</button>
         {#if showComments}

@@ -283,13 +283,13 @@ def addComment(request:HttpRequest):
                     
                     post=Blog.objects.filter(title=title)
                     if(post):
-                        cid=str(uuid.uuid5(uuid.NAMESPACE_DNS,str(datetime.datetime.now())))
+                        cid=str(uuid.uuid5(uuid.NAMESPACE_DNS,dbUser[0].uid+str(datetime.datetime.now())))
                         date=datetime.datetime.now()
-                        c=Comment.objects.filter(cid=cid,refId=post[0].refId,uid=dbUser[0].uid,date=date)
+                        c=Comment.objects.filter(refId=post[0].refId,uid=dbUser[0].uid,date=date)
                         if(len(c)>=10):
                             raise ValueError("Maximum Comment Limit Reached")
                         post=post[0]
-                        commentData=Comment(uid=dbUser[0].uid,name=dbUser[0].name,pfPhoto=dbUser[0].pfPhoto,comment=comment,refId=post.refId)
+                        commentData=Comment(cid=cid,uid=dbUser[0].uid,name=dbUser[0].name,pfPhoto=dbUser[0].pfPhoto,comment=comment,refId=post.refId)
                         commentData.save()
                         post.comments.append(commentData.toJson())
                         post.save()
