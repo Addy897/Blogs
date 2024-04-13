@@ -25,7 +25,7 @@ SECRET_KEY = 'Ro3V26XzR_Go4SaU5HEq8YuaMe-B8MjNNrNRhSMmKqm6iorQMPQznY2Gc3eFSDrfyl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*",".vercel.app"]
+ALLOWED_HOSTS = ["*","*.vercel.app","blogs-backend-28wkfknvj-addy897s-projects.vercel.app"]
 API_TOKEN='random'
 HASH_KEY="django-insecure--#t)^@ea0822p)rzc@fb(-&mpkngm58xmm2&i00#i!ck26k2+h"
 # SECURITY WARNING: don't run with debug turned on in production!
