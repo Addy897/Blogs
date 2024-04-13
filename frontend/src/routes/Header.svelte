@@ -13,22 +13,13 @@
 </script>
 
 <nav class="bg-white p-4 border-b-2">
-    <div class="container mx-auto flex justify-between items-center flex-wrap gap-5">
+    <div class="container mx-auto flex justify-evenly md:justify-between items-center flex-wrap gap-5">
         <div>
             <a href="?" class="text-black font-mono text-xl font-bold"
                 >Blog</a
             >
         </div>
-        <div class="md:hidden">
-            <!-- Hamburger -->
-            <button
-                id="mobile-menu-button"
-                class="text-black focus:outline-none"
-                on:click={showNav}
-            >
-                <i class={!isVisible ? "fa fa-bars" : "fa fa-xmark"}></i>
-            </button>
-        </div>
+        
         <form method="get" class="flex flex-row" action="/?/search">
             <div class="relative">
                 <input
@@ -43,6 +34,16 @@
                 </button>
             </div>
         </form>
+        <div class="md:hidden absolute left-[95%]">
+            <!-- Hamburger -->
+            <button
+                id="mobile-menu-button"
+                class="text-black focus:outline-none"
+                on:click={showNav}
+            >
+                <i class={!isVisible ? "fa fa-bars" : "fa fa-xmark"}></i>
+            </button>
+        </div>
         <div class="hidden md:flex flex-row text-xl font-sans gap-5">
             <a
                 href="/"                    
