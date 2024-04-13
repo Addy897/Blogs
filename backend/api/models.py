@@ -53,7 +53,7 @@ class EUsers(models.Model):
 class Blog(models.Model):
     uid=models.TextField()
     pfPhoto=models.TextField(default="",blank=True,null=True)
-    level=models.TextField(default=account_levels[0])
+    level=models.TextField(default=account_levels[0][1])
     name=models.TextField()
     refId=models.TextField()
     title=models.TextField(unique=True)
@@ -63,7 +63,7 @@ class Blog(models.Model):
         choices = status_levels, 
         default = '1'
         )
-    date=models.DateTimeField(default=datetime.datetime.now())
+    date=models.DateTimeField()
     likes=models.IntegerField(default=0)
     comments=models.JSONField(default=list,null=True,blank=True)
     md=models.TextField()
@@ -74,11 +74,11 @@ class Blog(models.Model):
         return {"uid":self.uid,"name":self.name,"title":self.title,"refId":self.refId,"date":self.date,"content":self.content,"likes":self.likes,"comments":self.comments,'status':status_levels[int(self.status)-1][1],'level':account_levels[int(self.level)-1][1],"pfPhoto":self.pfPhoto}
 
 class Comment(models.Model):
-    cid=models.UUIDField(default=str(uuid.uuid5(uuid.NAMESPACE_DNS,str(datetime.datetime.now()))))
+    cid=models.UUIDField(unique=True)
     uid=models.TextField()
     name=models.TextField()
     pfPhoto=models.TextField()
-    date=models.DateTimeField(default=datetime.datetime.now())
+    date=models.DateTimeField()
     comment=models.TextField()
     refId=models.TextField()
     reports=models.IntegerField(default=0)
