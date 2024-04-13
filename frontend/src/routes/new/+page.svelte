@@ -51,6 +51,7 @@
     };
     const removeImage = (index) => {
       images = images.filter((_, i) => i !== index);
+      files = files.filter((_, i) => i !== index);
       updateMarkdown();
     };
   
