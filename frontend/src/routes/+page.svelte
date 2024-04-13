@@ -59,7 +59,7 @@
         {#if drafts && typeof(drafts)==='object'}
         <section class="w-full h-full grid place-items-start  sm:grid-cols-2 md:grid-cols-3 gap-5 pt-10">
             {#each drafts as draft}
-                <div class="flex flex-col justify-center w-full">
+                <div class="flex flex-col justify-center w-[90%]">
                     <div class="flex flex-col justify-center bg-white shadow-md border border-gray-200 rounded-lg">
                         <a class=" flex justify-center" href=" ">
                             <img
@@ -74,9 +74,9 @@
                                 <div class="text-gray-900 font-bold tracking-tight text-[3vh] md:text-[2vw]">{draft.title}</div>
                             </a>
 
-                            <p class="font-normal text-gray-700  truncate w-screen md:w-full text-wrap h-[10vh] overflow-hidden ">
-                                {getText(draft.content)}
-                            </p>
+                            <span class="font-normal text-gray-700 px-6 truncate w-screen md:w-full text-wrap h-[12vh] overflow-hidden ">
+                                {getText(draft.content)}...
+                            </span>
                             <div class="flex flex-row w-full gap-x-5 justify-center items-center">
                                 <a
                                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center"
