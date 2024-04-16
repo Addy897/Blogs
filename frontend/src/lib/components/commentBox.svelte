@@ -37,6 +37,7 @@
 					class="mr-2 w-6 h-6 rounded-full"
 					src={comments.pfPhoto}
 					alt={comments.name}
+					referrerpolicy="no-referrer"
 				/>{comments.name}
 			</p>
 			<p class="text-sm text-gray-600  truncate">

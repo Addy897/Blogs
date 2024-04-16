@@ -16,7 +16,7 @@
 				<header class="mb-4 lg:mb-6 not-format">
 					<address class="flex items-center mb-6 not-italic">
 						<div class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
-							<img class="mr-4 w-16 h-16 rounded-full" src={blog.pfPhoto} alt="Profile_Photo" />
+							<img class="mr-4 w-16 h-16 rounded-full" src={blog.pfPhoto} alt="Profile_Photo" referrerpolicy="no-referrer" />
 							<div>
 								<a href=" " rel="author" class="text-xl font-bold text-gray-900">{blog.name}</a>
 								<p class="text-base text-gray-500">Premium{blog.level}</p>
@@ -66,7 +66,7 @@
 						{#if data && data.user}
 							<button
 								type="submit"
-                                class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center"
                                 >
 								Post comment
 							</button>
