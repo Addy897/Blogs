@@ -59,7 +59,7 @@
     
   </script>
   
-  <style>
+  <style lang="postcss">
     .toolbox {
       @apply transition-transform duration-300 ease-in-out;
       transform: translateY(100%);
@@ -89,7 +89,6 @@
           <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold w-auto text-nowrap py-2 px-4 rounded mr-2" on:click={() => insertMarkdown("1. ")}>Numbered List</button>
           <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold w-auto text-nowrap py-2 px-4 rounded mr-2" on:click={() => insertMarkdown("- ")}>Bulleted List</button>
           <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold w-auto text-nowrap py-2 px-4 rounded mr-2" on:click={() => insertMarkdown("```\n// Your code here\n```")}>Code Block</button>
-          <!-- Add more buttons for other Markdown syntax -->
         
       </div>
     </div>

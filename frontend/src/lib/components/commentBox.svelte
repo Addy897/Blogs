@@ -28,19 +28,19 @@
 </script>
 
 <article
-	class="p-6 text-base bg-white border-t border-gray-200 dark:border-gray-700 dark:bg-gray-900"
+	class="p-6 text-base bg-white border-t border-gray-200 "
 >
 	<footer class="flex justify-between items-center">
 		<div class="flex items-center">
-			<p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
+			<p class="inline-flex items-center mr-3 text-sm text-gray-900  font-semibold">
 				<img
 					class="mr-2 w-6 h-6 rounded-full"
 					src={comments.pfPhoto}
 					alt={comments.name}
 				/>{comments.name}
 			</p>
-			<p class="text-sm text-gray-600 dark:text-gray-400 truncate">
-				<time pubdate datetime="2022-06-23" title="June 23rd, 2022">{comments.date}</time>
+			<p class="text-sm text-gray-600  truncate">
+				<time pubdate datetime="{comments.date}" title="{comments.date}">{comments.date}</time>
 			</p>
 		</div>
 		{#if items}
@@ -64,7 +64,7 @@
 				<button
 					id="dropdownComment4Button"
 					data-dropdown-toggle="dropdownComment4"
-					class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-40 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+					class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500  bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 "
 					on:click={() => (isOpen = !isOpen)}
 					type="button"
 				>
@@ -83,5 +83,5 @@
 			</div>
 		{/if}
 	</footer>
-	<p class="text-gray-500 dark:text-gray-400">{comments.comment}</p>
+	<p class="text-gray-500 ">{comments.comment}</p>
 </article>

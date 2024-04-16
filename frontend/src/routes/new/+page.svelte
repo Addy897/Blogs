@@ -152,7 +152,7 @@
     }
   </script>
   
-  <style>
+  <style lang="postcss">
     .toolbox {
       @apply transition-transform duration-300 ease-in-out;
       transform: translateY(100%);
@@ -186,7 +186,6 @@
           <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold w-auto text-nowrap py-2 px-4 rounded mr-2" on:click={() => insertMarkdown("1. ")}>Numbered List</button>
           <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold w-auto text-nowrap py-2 px-4 rounded mr-2" on:click={() => insertMarkdown("- ")}>Bulleted List</button>
           <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold w-auto text-nowrap py-2 px-4 rounded mr-2" on:click={() => insertMarkdown("```\n// Your code here\n```")}>Code Block</button>
-          <!-- Add more buttons for other Markdown syntax -->
         
       </div>
     </div>
@@ -210,7 +209,8 @@
     {:else}
       <form class="flex flex-col items-center w-full p-4" method="post">
         <input type="text" placeholder="Title" bind:value={markdownTitle} class="mb-2 p-2 border border-gray-400 rounded">
-        <textarea bind:value={markdownContent} name="content" id="markdownTextarea" class="m-2 px-2 lg:p-4 md:p-4 sm:p-3 border-solid border-2 border-black min-w-full h-[50vh] rounded-2xl shadow-md"></textarea>
+        <textarea bind:value={markdownContent} name="content" id="markdownTextarea"   class="m-2 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 resize-none w-full h-[50vh] shadow-md text-gray-800 placeholder-gray-500"
+        placeholder="Write your blog here..." ></textarea>
         <div class="flex items-center space-x-2">
             {#each images as image, index (image)}
               <div class="flex items-center space-x-2" key={index}>
