@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit'
 import { handlers } from '../../lib/handlers'
 import { put } from "@vercel/blob";
+import {BLOB_READ_WRITE_TOKEN} from "$env/static/private";
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({locals}) {
@@ -31,7 +32,7 @@ export const actions = {
         for(let i=0;i<length;i++){
             let fileToUpload=data.get(String((i+1)))
             let name=`uploads/${fileToUpload.name.replace(" ","_")}.png`
-            let url  = await put(name, fileToUpload, { access: 'public',token:"vercel_blob_rw_X9mFAlR8Ju6WpJqj_025bj7SwNE7AEjy8UHFRtRhJQf8F2U"});
+            let url  = await put(name, fileToUpload, { access: 'public',token:BLOB_READ_WRITE_TOKEN});
             url_list=[...url_list,url.url]
         }
         if(url_list.length>0){
