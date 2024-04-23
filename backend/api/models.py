@@ -59,8 +59,17 @@ class EUsers(models.Model):
 class Blog(models.Model):
     uid=models.TextField()
     pfPhoto=models.TextField(default="",blank=True,null=True)
-    level=models.TextField(default=account_levels[0][1])
-    topic=models.TextField(default=topics[0][1])
+    
+    level= models.CharField( 
+        max_length = 20, 
+        choices = account_levels, 
+        default = '1'
+        )
+    topic= models.CharField( 
+        max_length = 20, 
+        choices = topics, 
+        default = '1'
+        )
     name=models.TextField()
     refId=models.TextField()
     title=models.TextField(unique=True)
