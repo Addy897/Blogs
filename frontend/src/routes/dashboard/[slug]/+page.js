@@ -1,6 +1,4 @@
-import { browser } from "$app/environment"
-import { loginStore } from '../../../stores/loginstore';
 
-export async function load({data,params}) {
+export async function load({data}) {
     return data
 }

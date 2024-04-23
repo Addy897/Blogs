@@ -1,11 +1,14 @@
 
 <script>
 	import {loginStore} from "./../stores/loginstore"
+    import icon from "$lib/images/icon.png"
     $: isVisible = false;
         const showNav = () => {
         isVisible = !isVisible;
     };
-	
+	let isactive="home";
+
+    const changeIsActive=(current)=>{isactive=current};
    
     let navButtonClass =
         "w-full sm:pl-0 cursor-pointer sm:w-auto max-sm:hover:text-black max-sm:hover:bg-white sm:hover:text-2xl lg:mx-3 px-2 shadow-md rounded-lg flex justify-center flex-row items-center text-center";
@@ -14,12 +17,10 @@
 
 <nav class="bg-white p-4 border-b-2">
     <div class="container mx-auto flex justify-evenly md:justify-between items-center flex-wrap gap-5">
-        <div>
-            <a href="?" class="text-black font-mono text-xl font-bold"
-                >Blog</a
-            >
+        <div class="w-1/2 md:w-auto">
+           <img src={icon} alt="icon"/>
         </div>
-        
+        <!--
         <form method="get" class="flex flex-row" action="/?/search">
             <div class="relative">
                 <input
@@ -33,8 +34,8 @@
                 >
                 </button>
             </div>
-        </form>
-        <div class="md:hidden absolute left-[95%]">
+        </form>-->
+        <div class="md:hidden absolute top-[3%] left-[90%]">
             <!-- Hamburger -->
             <button
                 id="mobile-menu-button"
@@ -47,18 +48,21 @@
         <div class="hidden md:flex flex-row text-xl font-sans gap-5">
             <a
                 href="/"                    
-                class="text-black border-solid hover:bg-blue-300 block px-3 py-2 rounded-lg font-medium"
+                class="border-solid  block px-3 py-2 rounded-lg font-medium {isactive!=='home'?"text-black":"text-red-600"}"
+                on:click={()=>{changeIsActive("home")}}
                 >Home</a
             >
             <a
                 href="/about"   
-                class="text-black border-solid  hover:bg-blue-300 block px-3 py-2 rounded-lg font-medium"
+                class=" border-solid   block px-3 py-2 rounded-lg font-medium {isactive!=='about'?"text-black":"text-red-600"}"
+                on:click={()=>{changeIsActive("about")}}
                 >About</a
             >
             {#if $loginStore.isLogged}
                 <a
 					href="/dashboard"
-                    class="text-black border-solid  hover:bg-blue-300 flex flex-row items-center gap-3 justify-center px-3 py-2 rounded-lg font-medium"
+                    class="border-solid   flex flex-row items-center gap-3 justify-center px-3 py-2 rounded-lg font-medium {isactive!=='dashboard'?"text-black":"text-red-600"}"
+                    on:click={()=>{changeIsActive("dashboard")}}
                     >{$loginStore.userName}
                         <img
                             class="rounded-full h-7"
@@ -73,12 +77,20 @@
             {:else}
                 <a 
 					href="/login"
-                    class="text-black  hover:bg-blue-300 block px-3 py-2 rounded-lg font-medium"
+                    class="  block px-3 py-2 rounded-lg font-medium {isactive!=='login'?"text-black":"text-red-600"}"
+                    on:click={()=>{changeIsActive("login")}}
+
                     >Login</a
                 >
             {/if}
         </div>
+        <div>
+        <a href=" " class="inline-block mt-2 bg-[#FF3A1D] text-white font-bold py-2 px-8 rounded-full">Join the waitlist</a>
+        </div>
+
+
     </div>
+
 </nav>
 
 <!-- Mobile Menu -->
@@ -90,9 +102,9 @@
     <div
         class="flex flex-col justify-center items-center px-2 pt-2 pb-3 space-y-1 gap-5"
     >
-        <a href="?" class="py-2 px-3 border-b-2 w-full flex justify-center text-black"
-            >Blogs</a
-        >
+        <img src={icon} alt="icon" class="py-2 px-3 border-b-2 w-full flex justify-center text-black"
+            
+        />
 
         <button
             on:click={() => {
@@ -100,7 +112,7 @@
                   location.href="/"
 
             }}
-            class="text-black hover:bg-blue-300 block px-3 py-2 rounded-md font-medium"
+            class="text-black  block px-3 py-2 rounded-md font-medium"
             >Home</button
         >
         <button
@@ -108,7 +120,7 @@
                location.href="/about"
                
             }}
-            class="text-black hover:bg-blue-300 block px-3 py-2 rounded-md font-medium"
+            class="text-black  block px-3 py-2 rounded-md font-medium"
             data-sveltekit-preload-data="hover"
             >about</button
         >
@@ -117,7 +129,7 @@
                 href="/dashboard"
                 on:click={()=>{isVisible=false}} 
                 
-                class="text-black hover:bg-blue-300 flex flex-row px-3 py-2 rounded-md font-medium gap-2"
+                class="text-black  flex flex-row px-3 py-2 rounded-md font-medium gap-2"
                
                 >{$loginStore.userName}<img
                 class="rounded-full h-7 "
@@ -132,7 +144,7 @@
                 on:click={() => {
                     location.href="/login"
                 }}
-                class="text-black hover:bg-blue-300 block px-3 py-2 rounded-md font-medium"
+                class="text-black  block px-3 py-2 rounded-md font-medium"
                 >Login</button
             >
         {/if}

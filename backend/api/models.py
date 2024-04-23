@@ -6,6 +6,12 @@ account_levels = (
     ("2", "Premium2"), 
     ("3", "Premium3"), 
 ) 
+topics = ( 
+    ("1", "Topic1"), 
+    ("2", "Topic2"), 
+    ("3", "Topic3"), 
+    ("4", "Misc"), 
+) 
 access_levels = ( 
     ("1", "Read"), 
     ("2", "ReadWrite"), 
@@ -54,6 +60,7 @@ class Blog(models.Model):
     uid=models.TextField()
     pfPhoto=models.TextField(default="",blank=True,null=True)
     level=models.TextField(default=account_levels[0][1])
+    topic=models.TextField(default=topics[0][1])
     name=models.TextField()
     refId=models.TextField()
     title=models.TextField(unique=True)
@@ -64,6 +71,7 @@ class Blog(models.Model):
         default = '1'
         )
     date=models.DateTimeField()
+    views=models.IntegerField(default=0)
     likes=models.IntegerField(default=0)
     comments=models.JSONField(default=list,null=True,blank=True)
     md=models.TextField()
@@ -71,7 +79,7 @@ class Blog(models.Model):
     def __str__(self):
         return self.title
     def toJson(self):
-        return {"uid":self.uid,"name":self.name,"title":self.title,"refId":self.refId,"date":self.date,"content":self.content,"likes":self.likes,"comments":self.comments,'status':status_levels[int(self.status)-1][1],'level':account_levels[int(self.level)-1][1],"pfPhoto":self.pfPhoto}
+        return {"uid":self.uid,"name":self.name,"title":self.title,"refId":self.refId,"date":self.date,"content":self.content,"likes":self.likes,"comments":self.comments,'status':status_levels[int(self.status)-1][1],'level':account_levels[int(self.level)-1][1],"pfPhoto":self.pfPhoto,'views':self.views,'topic':topics[int(self.topic)-1][1]}
 
 class Comment(models.Model):
     cid=models.UUIDField(unique=True)
