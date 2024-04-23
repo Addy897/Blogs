@@ -1,7 +1,39 @@
 import { redirect } from '@sveltejs/kit'
 import { handlers } from '../../lib/handlers'
 import { put } from "@vercel/blob";
-import {BLOB_READ_WRITE_TOKEN} from "$env/static/private";
+import { writeFileSync } from 'fs';
+import {API_KEY,CLOUD_NAME,API_SECRET} from "$env/static/private";
+import { v2 as cloudinary } from 'cloudinary';
+cloudinary.config({
+    cloud_name: CLOUD_NAME,
+    api_key: API_KEY,
+    api_secret: API_SECRET,
+    secure: true,
+  });
+
+  async function uploadFile(file) {
+    const url = `https://api.cloudinary.com/v1_1/dx2wr3tdn/upload`;
+    const fd = new FormData();
+    fd.append('upload_preset', unsignedUploadPreset);
+    fd.append('tags', 'browser_upload'); // Optional - add tags for image admin in Cloudinary
+    fd.append('file', file);
+  
+    fetch(url, {
+      method: 'POST',
+      body: fd,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // File uploaded successfully
+        const url = data.secure_url;
+        return url
+       
+      })
+      .catch((error) => {
+        console.error('Error uploading the file:', error);
+      });
+  }
+  
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({locals}) {
@@ -31,9 +63,31 @@ export const actions = {
         let url_list=[]
         for(let i=0;i<length;i++){
             let fileToUpload=data.get(String((i+1)))
-            let name=`uploads/${fileToUpload.name.replace(" ","_")}.png`
-            let url  = await put(name, fileToUpload, { access: 'public',token:BLOB_READ_WRITE_TOKEN});
-            url_list=[...url_list,url.url]
+            let filedata=await fileToUpload.arrayBuffer();
+			const buffer = new Uint8Array(filedata);
+			const uploadStream = await new Promise((resolve, reject) => {
+				cloudinary.uploader
+					.upload_stream({
+                        filename_override:fileToUpload.name,
+                        folder: '',
+                        resource_type: 'image'}, function (error, result) {
+						if (error) {
+							return reject(error);
+						}
+						return resolve(result);
+					})
+					.end(buffer);
+			});
+            let url=null
+           if(!uploadStream.Error){
+            url=uploadStream.url;
+           }
+           else{
+            return {error:true,msg:uploadStream.Error}
+           }
+           // writeFileSync(name,Buffer.from(filedata) );
+
+            url_list=[...url_list,url]
         }
         if(url_list.length>0){
                 markdownContent=markdownContent.replace(/\!\[Image(\d+)\]/g, (match, index) => {
@@ -58,9 +112,28 @@ export const actions = {
         let title=data.get('title')
         let url_list=[]
         for(let i=0;i<length;i++){
-            let fileToUpload=data.get(String((i+1)))
-            let name=`uploads/${fileToUpload.name.replace(" ","_")}.png`
-            let url  = await put(name, fileToUpload, { access: 'public',token:"vercel_blob_rw_X9mFAlR8Ju6WpJqj_025bj7SwNE7AEjy8UHFRtRhJQf8F2U"});
+            let filedata=await fileToUpload.arrayBuffer();
+			const buffer = new Uint8Array(filedata);
+			const uploadStream = await new Promise((resolve, reject) => {
+				cloudinary.uploader
+					.upload_stream({
+                        filename_override:fileToUpload.name,
+                        folder: '',
+                        resource_type: 'image'}, function (error, result) {
+						if (error) {
+							return reject(error);
+						}
+						return resolve(result);
+					})
+					.end(buffer);
+			});
+            let url=null
+           if(!uploadStream.Error){
+            url=uploadStream.url;
+           }
+           else{
+            return {error:true,msg:uploadStream.Error}
+           }
             url_list=[...url_list,url.url]
         }
         if(url_list.length>0){
