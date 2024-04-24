@@ -9,8 +9,8 @@ account_levels = (
 topics = ( 
     ("Topic 1", "Topic 1"), 
     ("Topic 2", "Topic 2"), 
-    ("3", "Topic3"), 
-    ("4", "Misc"), 
+    ("Topic 3", "Topic3"), 
+    ("Misc", "Misc"), 
 ) 
 access_levels = ( 
     ("1", "Read"), 
