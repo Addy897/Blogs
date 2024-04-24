@@ -7,8 +7,8 @@ account_levels = (
     ("3", "Premium3"), 
 ) 
 topics = ( 
-    ("1", "Topic1"), 
-    ("2", "Topic2"), 
+    ("Topic 1", "Topic 1"), 
+    ("Topic 2", "Topic 2"), 
     ("3", "Topic3"), 
     ("4", "Misc"), 
 ) 
