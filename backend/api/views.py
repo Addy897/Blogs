@@ -2,13 +2,13 @@ from django.http import HttpResponse,HttpRequest,JsonResponse,HttpResponseNotFou
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.db.utils import IntegrityError
-import datetime
 from .m2h import m2h
 from django.utils.crypto import salted_hmac
 from django.contrib.auth.hashers import make_password,check_password
 import json,uuid
 from .validate import parseLoginUser
 from .models import EUsers,Blog,Comment
+from django.utils import timezone
 
 
 @csrf_exempt
@@ -25,14 +25,15 @@ def setUserBlog(request:HttpRequest):
                 title=data.get('title')
                 content=data.get('content')
                 cover=data.get('coverPhoto')
-                if(not cover):
+                print(cover)
+                if(cover==None):
                     cover="https://flowbite.com/docs/images/blog/image-1.jpg"
                 topic=data.get('topic')
                 status=data.get('status')
                 md=content
 
                 content=m2h(content)
-                date=datetime.datetime.now()
+                date = timezone.now()
                 BlogData=Blog.objects.filter(title=title);
                 if(len(BlogData)==1):
                     raise ValueError("Blog with same Title!!")
@@ -48,6 +49,7 @@ def setUserBlog(request:HttpRequest):
                 
                 
             except ValueError as e:
+                print(e)
                 return(JsonResponse({"error":True,"errorMessage":str(e)}))
             
         else:
@@ -180,7 +182,7 @@ def register(request:HttpRequest):
            
             try:
                 passHash=make_password(data.get("password"))
-                uid=str(uuid.uuid5(uuid.NAMESPACE_DNS,data.get('name')+str(datetime.datetime.now(datetime.UTC))+passHash))
+                uid=str(uuid.uuid5(uuid.NAMESPACE_DNS,data.get('name')+str(timezone.now())+passHash))
                 phone=data.get("phone")
                 user=EUsers(uid=uid,email=data.get("email"),phone=phone,name=data.get("name"),password=passHash)
                 user.save()
@@ -272,6 +274,31 @@ def updateLikes(request:HttpRequest):
     else:
         return HttpResponseNotFound()
 
+@csrf_exempt
+def incView(request:HttpRequest):
+    if(request.method=="POST"):
+        if(request.headers.get('api-token')=='random'):
+            data:dict=json.loads(request.body.decode())
+            try:
+                
+                refId=data.get('refId')
+                if(refId):
+                        post=Blog.objects.filter(title=refId)
+                        if(post):
+                            post=post[0]
+                            post.views+=1
+                            post.save()
+                        else:
+                            raise ValueError("No Post Found!!")
+
+                else:
+                    raise ValueError("No Post Found!!")
+                return JsonResponse({"error":False})
+            except Exception as e:
+                print(e)
+                return JsonResponse({"error":True,"errorMessage":str(e)})
+    else:
+        return HttpResponseNotFound()
 
 @csrf_exempt
 def addComment(request:HttpRequest):
@@ -287,7 +314,7 @@ def addComment(request:HttpRequest):
                     
                     post=Blog.objects.filter(title=title)
                     if(post):
-                        date=datetime.datetime.now()
+                        date=timezone.now()
                         cid=str(uuid.uuid5(uuid.NAMESPACE_DNS,dbUser[0].uid+str(date)))
                         c=Comment.objects.filter(refId=post[0].refId,uid=dbUser[0].uid)
                         if(len(c)>=10):
@@ -358,7 +385,7 @@ def editUserBlog(request:HttpRequest):
                 md=data.get('md')
                 refId=data.get('refId')
                 content=m2h(md)
-                date=datetime.datetime.now()
+                date=timezone.now()
                 BlogData=Blog.objects.filter(uid=euser[0].uid,refId=refId);
                 if(len(BlogData)<1):
                     raise ValueError("No Blog with same Title!!")

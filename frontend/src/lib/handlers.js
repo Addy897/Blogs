@@ -263,6 +263,21 @@ static async addGoogle(guser){
     })
     return r;
   }
+  static async incView(refId) {
+    let r = { code: false }
+    const res = await fetch(BACKEND_URL + "incView/", {
+      method: "POST", headers: {
+        'api-token': 'random',
+      }, body: JSON.stringify({
+        "refId": refId
+      })
+    }).then(async (response)=>{
+      r = await response.json();
+    }).catch((err)=>{
+      console.log(err)
+    })
+    return r;
+  }
   static async getBlogs(title=null) {
     let blog = null
     await fetch(BACKEND_URL + "getBlog/", {

@@ -35,7 +35,7 @@
                 </button>
             </div>
         </form>-->
-        <div class="md:hidden absolute top-[3%] left-[90%]">
+        <div class="md:hidden absolute left-[90%]">
             <!-- Hamburger -->
             <button
                 id="mobile-menu-button"

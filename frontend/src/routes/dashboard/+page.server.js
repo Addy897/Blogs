@@ -103,7 +103,7 @@ export const actions = {
                     return match
                 });
         }
-       let rawResponse=await handlers.setUserBlog(locals.user,title,markdownContent,"2",topic)
+       let rawResponse=await handlers.setUserBlog(locals.user,title,markdownContent,coverPhoto,"2",topic)
        if (rawResponse.error) {
         return {error:true,msg:rawResponse.error}
        }

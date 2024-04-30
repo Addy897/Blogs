@@ -83,20 +83,21 @@
 		}
 	}
 </script>
+<style lang='postcss'>
+	
+	#blog{
+		@apply md:w-3/4
+	}
+</style>
 {#if loading}
 	<ShowLoading/>
 {:else if blog && typeof blog === 'object'}
 	{#await allowEdit()}
-		<div class="flex h-[50vh] flex-row justify-center items-center">
-			<div class="flex flex-col justify-center items-center w-full">
-				<div><img src={loading} alt="" /></div>
-				
-			</div>
-		</div>
+	<ShowLoading/>
 		
 	{:then md}
 	<div class="hidden">{setMarkdown(md)}</div>
-	<EditBlog bind:markdownContent bind:markdownTitle bind:markdownMode />
+	<EditBlog bind:markdownContent bind:markdownTitle bind:markdownMode coverPhoto={blog.coverPhoto} />
 	<section class="flex flex-col justify-center items-center w-full gap-5 pt-24">
 		{#if markdownMode}
 			<form class="flex flex-col items-center w-full p-4">
@@ -121,14 +122,16 @@
 	</section>
 	{/await}
 {:else if review && typeof review === 'object'}
-	<section class="flex flex-col justify-center items-center w-full gap-5 pt-24">
+	<section class="flex flex-col justify-center items-center w-full gap-5 pt-24 md:p-24">
+		<div class="md:w-1/2"><img class="rounded-xl" src={review.coverPhoto} alt="CoverPhoto"/></div>
+
         <h1 class="underline">{markdownTitle}</h1>
       
 		<div class="flex flex-col justify-center items-center">
 			<p class=" text-lg font-bold"><span class="font-light">By:&nbsp</span>{review.name}</p>
 			<p>Published On:&nbsp{new Date(review.date).toUTCString()}</p>
 		</div>
-		<div class="preview p-4 w-full sm:w-auto">{@html review.content}</div>
+		<main id="blog" class="flex flex-col justify-center items-center w-full sm:w-auto">{@html review.content}</main>
 		{#if review.status === 'InReview'}
         <button
         type="button"

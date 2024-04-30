@@ -2,7 +2,7 @@
     export let draft;
     export let user;
     import { browser } from "$app/environment"
-    import check from "$lib/images/check-circle.svg"
+	import { goto } from "$app/navigation";
 
     function getImg(el) {
         let html;

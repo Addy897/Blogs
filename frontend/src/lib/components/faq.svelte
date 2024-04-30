@@ -14,7 +14,7 @@
     <h1 class=" font-extrabold">FAQs</h1>
     <p>Got Quries? We're armed with answers</p>
     </div>
-    <div class="w-full lg:w-1/2 shadow-lg flex flex-row flex-wrap md:flex-nowrap p-8 gap-8 rounded-xl">
+    <div class="w-full lg:w-1/2 shadow-lg flex flex-row flex-wrap md:flex-nowrap md:p-8 gap-8 rounded-xl">
         <div class="lg:w-1/2  flex flex-col gap-4">
             <button class="w-full border-2 rounded-lg p-4 text-start {active!==0?"":"bg-black text-white"}" on:click={()=>{setAns(0)}}>Why EJY Health?</button>
             <button class="w-full border-2 rounded-lg p-4 text-start {active!==1?"":"bg-black text-white"}" on:click={()=>{setAns(1)}}>Benefits of joining waitlist?</button>

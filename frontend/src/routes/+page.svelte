@@ -83,7 +83,7 @@ function loadTranslate() {
                     </div>
             </div>
             <div class="flex flex-row justify-center items-center w-full">
-            <div class="flex flex-row w-3/4 justify-evenly  py-2 bg-gray-200 rounded-full">
+            <div class="flex flex-row md:w-3/4 justify-evenly  py-2 bg-gray-200 rounded-full">
                 <button class="{isSelected==="1"?"bg-white":" bg-transparent"} p-1 px-4 rounded-full" on:click={()=>{onSelected("1")}}>Topic 1</button>
                 <button class="{isSelected==="2"?"bg-white":" bg-transparent"} p-1 px-4 rounded-full" on:click={()=>{onSelected("2")}} >Topic 2</button>
                 <button class="{isSelected==="3"?"bg-white":" bg-transparent"} p-1 px-4 rounded-full" on:click={()=>{onSelected("3")}} >Topic 3</button>

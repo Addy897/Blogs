@@ -10,6 +10,7 @@ urlpatterns=[
     path("getAllBlogs/",views.getAllBlogs),
     path("users/google/",views.addGoogle),
     path("updateLikes/",views.updateLikes),
+    path("incView/",views.incView),
     path("addComment/",views.addComment),
     path("removeComment/",views.removeComment),
     path("getUserDraft/",views.getUserDraft),
