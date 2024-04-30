@@ -222,7 +222,7 @@ static async addGoogle(guser){
 
     return ({draft:response})
   }
-  static async setUserBlog(user,title, content,status) {
+  static async setUserBlog(user,title, content,coverPhoto,status,topic) {
     let r = { error: false }
     await fetch(BACKEND_URL + "setUserBlog/", {
       method: "POST",
@@ -233,7 +233,9 @@ static async addGoogle(guser){
         'user': user,
         'title':title,
         'content': content,
+        'topic': topic,
         'status': status ,
+        'coverPhoto':coverPhoto
       })
     }).then(async (respo) => {
       r = await respo.json()

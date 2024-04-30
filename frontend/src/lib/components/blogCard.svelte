@@ -60,7 +60,7 @@
 <div class="bg-white flex flex-col rounded-lg shadow-md overflow-hidden transition-transform duration-500 transform hover:scale-105 gap-2 p-2">
     
     <a href="{draft.link}">
-        <img src={getImg(draft.content)} alt="{draft.title}" class="h-48 w-full object-cover rounded-xl">
+        <img src={draft.coverPhoto} alt="{draft.title}" class="h-48 w-full object-cover rounded-xl">
     </a>
     <div class="flex flex-row gap-4">
     <div class=" rounded-full p-1 px-4  text-center text-green-500 border-2 border-green-500 flex flex-row justify-center items-center gap-2" >

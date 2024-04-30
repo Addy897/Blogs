@@ -173,7 +173,7 @@
 				<section class="section">
 					{#each Object.entries(d.draft) as [key, draft]}
 						<div class="card">
-						<img src={getImg(draft.content)} alt="">
+						<img src={draft.coverPhoto} alt="">
 						<div class="card-content">
 							<h5 class="card-title">{draft.title}</h5>
 							<p class="card-description">{getText(draft.content)}</p>

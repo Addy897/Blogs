@@ -24,6 +24,10 @@ def setUserBlog(request:HttpRequest):
                     raise ValueError("No EUsers Found")
                 title=data.get('title')
                 content=data.get('content')
+                cover=data.get('coverPhoto')
+                if(not cover):
+                    cover="https://flowbite.com/docs/images/blog/image-1.jpg"
+                topic=data.get('topic')
                 status=data.get('status')
                 md=content
 
@@ -38,7 +42,7 @@ def setUserBlog(request:HttpRequest):
                 if(not email):
                     email=user.get('providerData',[{}])[0].get('email')
                 
-                d=Blog(uid=user.get("uid"),title=title,name=user.get('displayName'),refId=refId,date=date,content=content,status=status,md=md,pfPhoto=euser[0].pfPhoto,level=euser[0].account_level)
+                d=Blog(uid=user.get("uid"),title=title,name=user.get('displayName'),refId=refId,date=date,content=content,status=status,md=md,pfPhoto=euser[0].pfPhoto,level=euser[0].account_level,topic=topic,coverPhoto=cover)
                 d.save()
                 return JsonResponse({"error":False,"refId":refId,"status":status})
                 

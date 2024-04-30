@@ -7,10 +7,10 @@ account_levels = (
     ("3", "Premium3"), 
 ) 
 topics = ( 
-    ("Topic 1", "Topic 1"), 
-    ("Topic 2", "Topic 2"), 
-    ("Topic 3", "Topic3"), 
-    ("Misc", "Misc"), 
+    ("1", "Topic 1"), 
+    ("2", "Topic 2"), 
+    ("3", "Topic 3"), 
+    ("4", "Misc"), 
 ) 
 access_levels = ( 
     ("1", "Read"), 
@@ -59,6 +59,7 @@ class EUsers(models.Model):
 class Blog(models.Model):
     uid=models.TextField()
     pfPhoto=models.TextField(default="",blank=True,null=True)
+    coverPhoto=models.TextField(default="https://flowbite.com/docs/images/blog/image-1.jpg")
     
     level= models.CharField( 
         max_length = 20, 
@@ -88,7 +89,7 @@ class Blog(models.Model):
     def __str__(self):
         return self.title
     def toJson(self):
-        return {"uid":self.uid,"name":self.name,"title":self.title,"refId":self.refId,"date":self.date,"content":self.content,"likes":self.likes,"comments":self.comments,'status':status_levels[int(self.status)-1][1],'level':account_levels[int(self.level)-1][1],"pfPhoto":self.pfPhoto,'views':self.views,'topic':topics[int(self.topic)-1][1]}
+        return {"uid":self.uid,"name":self.name,"title":self.title,"refId":self.refId,"date":self.date,"content":self.content,"likes":self.likes,"comments":self.comments,'status':status_levels[int(self.status)-1][1],'level':account_levels[int(self.level)-1][1],"pfPhoto":self.pfPhoto,'views':self.views,'topic':topics[int(self.topic)-1][1],'coverPhoto': self.coverPhoto}
 
 class Comment(models.Model):
     cid=models.UUIDField(unique=True)

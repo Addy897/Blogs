@@ -94,6 +94,8 @@
         formData.append(String((i+1)),f[i]);
       }
       formData.append("title",markdownTitle)
+      formData.append("topic",topic)
+      formData.append("coverPhoto",coverPhoto)
       formData.append("content",markdownContent)
         await fetch("/dashboard?/publish",{
             method:"POST",
@@ -127,6 +129,8 @@
         formData.append(String((i+1)),f[i]);
       }
       formData.append("title",markdownTitle)
+      formData.append("topic",topic)
+      formData.append("coverPhoto",coverPhoto)
       formData.append("content",markdownContent)
         await fetch("/dashboard?/draft",{
             method:"POST",
@@ -150,6 +154,21 @@
         }
         
     }
+    let topics=['Topic 1','Topic 2','Topic 3','Misc']
+    let topic='0';
+    let iSrc = ''; 
+    let coverPhoto=null;
+    $: if(!iSrc){coverPhoto=null};
+function handleCoverPhoto(event) {
+   coverPhoto = event.target.files[0]; 
+  if (coverPhoto) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      iSrc = reader.result; 
+    };
+    reader.readAsDataURL(coverPhoto); 
+  }
+}
   </script>
   
   <style lang="postcss">
@@ -204,11 +223,33 @@
     </div>
     {/if}
     {#if markdownMode}
+        {#if iSrc}
+        <img src={iSrc} class="w-[40%] rounded-xl" alt=" "/>
+        {/if}
         <h1 class="underline">{markdownTitle}</h1>
       <div class="preview p-4 w-full sm:w-auto">{@html htmlContent}</div>
     {:else}
-      <form class="flex flex-col items-center w-full p-4" method="post">
+      <form class="flex flex-col items-center w-full p-4 gap-2" method="post">
+        <div class="flex gap-2">
+          <label for="coverPhoto" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Add Cover Image
+            <input type="file" id="coverPhoto" accept="image/*" class="hidden" on:change={handleCoverPhoto}>
+          </label>          
+          {#if iSrc}
+          <img src={iSrc} alt=" " class="h-10 w-10 rounded-full">
+          <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" on:click={() => iSrc=null}>Remove</button>          {/if}
+        </div>
         <input type="text" placeholder="Title" bind:value={markdownTitle} class="mb-2 p-2 border border-gray-400 rounded">
+        <select bind:value={topic} required>
+            {#each Object.entries(topics) as [index,value] }
+              {#if index===0}
+              <option value="{index}" selected="selected">{value}</option>
+              {:else}
+              <option value="{index}">{value}</option>
+
+              {/if}
+            {/each}
+        </select>
         <textarea bind:value={markdownContent} name="content" id="markdownTextarea"   class="m-2 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 resize-none w-full h-[50vh] shadow-md text-gray-800 placeholder-gray-500"
         placeholder="Write your blog here..." ></textarea>
         <div class="flex items-center space-x-2">
@@ -225,6 +266,7 @@
               </label>
             {/if}
           </div>
+
         <div class="flex justify-between w-full sm:w-auto mb-10">
           <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mr-2" on:click={handlePublish}>Publish</button>
           <button type="button" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 ml-2" on:click={handleDraft}>Save as Draft</button>
