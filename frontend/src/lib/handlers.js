@@ -278,6 +278,23 @@ static async addGoogle(guser){
     })
     return r;
   }
+  static async save(user,name,file) {
+    let r = { code: false }
+    const res = await fetch(BACKEND_URL + "saveProfile/", {
+      method: "POST", headers: {
+        'api-token': 'random',
+      }, body: JSON.stringify({
+        "user":user,
+        "name": name,
+        "file":file
+      })
+    }).then(async (response)=>{
+      r = await response.json();
+    }).catch((err)=>{
+      console.log(err)
+    })
+    return r;
+  }
   static async getBlogs(title=null) {
     let blog = null
     await fetch(BACKEND_URL + "getBlog/", {

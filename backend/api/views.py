@@ -301,6 +301,31 @@ def incView(request:HttpRequest):
         return HttpResponseNotFound()
 
 @csrf_exempt
+def saveProfile(request:HttpRequest):
+    if(request.method=="POST"):
+        if(request.headers.get('api-token')=='random'):
+            data:dict=json.loads(request.body.decode())
+            try:
+                user=data.get("user")
+                dbUser=EUsers.objects.filter(uid=user.get('uid'))
+                name=data.get('name')
+                file=data.get('file')
+                if(len(dbUser)):
+                    
+                    dbUser[0].name=name
+                    dbUser[0].pfPhoto=file
+                    dbUser[0].save()
+                    
+                else:
+                    raise ValueError("No Users Found!!")
+                return JsonResponse(dbUser[0].toJson())
+            except Exception as e:
+                print(e)
+                return JsonResponse({"error":True,"errorMessage":str(e)})
+    else:
+        return HttpResponseNotFound()
+
+@csrf_exempt
 def addComment(request:HttpRequest):
     if(request.method=="POST"):
         if(request.headers.get('api-token')=='random'):

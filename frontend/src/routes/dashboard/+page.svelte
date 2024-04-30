@@ -3,16 +3,18 @@
   
   <script>
 	export let data;
+	export let form;
 	import { browser } from "$app/environment";
+	import { enhance } from "$app/forms";
 	import { goto } from "$app/navigation";
 	import ShowLoading from "$lib/components/showLoading.svelte";
   
-	let Pages = ["My Blogs", "New Blog", "Logout"];
+	let Pages = ["My Blogs", "New Blog",'Profile', "Logout"];
 	if (data && data.extra) {
-	  Pages = ["My Blogs", "New Blog", "For Review", "Logout"];
+	  Pages = ["My Blogs", "New Blog", "For Review","Profile", "Logout"];
 	}
   
-	let currentPage = Pages[0];
+	let currentPage = Pages[3];
 	function setoc(p) {
 	  currentPage = p;
 	}
@@ -34,17 +36,36 @@
 		return "text-green-600";
 	  }
 	}
-  
-	function getImg(content) {
-	  let html;
-	  if (browser) {
-		html = document.createElement('html');
-		html.innerHTML = content;
-		const imgs = html.getElementsByTagName("img");
-		return imgs.length ? imgs[0].src : "https://flowbite.com/docs/images/blog/image-1.jpg";
-	  }
+	let email=data.user.email || data.user.phone;
+	let name=data.user.displayName;
+	let pfPhoto=data.user.pfPhoto;
+	let coverPhoto=null;
+	const handleCoverPhoto=(event)=>{
+		coverPhoto = event.target.files[0]; 
+		if (coverPhoto) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+			pfPhoto = reader.result; 
+			};
+			reader.readAsDataURL(coverPhoto); 
+		}
+
 	}
-  
+	const save = async (e)=>{
+		let formData = new FormData();
+		formData.append('name',name);
+		if(coverPhoto){
+		formData.append('profile',coverPhoto)
+		}
+		await fetch("/dashboard?/saveProfile",{
+            method:"POST",
+            body:formData
+        }).then(async (response)=>{
+        	await response.json()
+            
+            
+        });
+	}	
   </script>
   
  
@@ -176,7 +197,7 @@
 						<img src={draft.coverPhoto} alt="">
 						<div class="card-content">
 							<h5 class="card-title">{draft.title}</h5>
-							<p class="card-description">{getText(draft.content)}</p>
+							<p class="card-description  truncate">{getText(draft.content)}</p>
 							<div class="card-status {getColor(draft.status)}">{draft.status}</div>
 							<a href="dashboard/{draft.title}/?for=draft" class="card-link">Read more</a>
 						</div>
@@ -234,7 +255,7 @@
 					<img src={draft.coverPhoto} alt="">
 					<div class="card-content">
 					  <h5 class="card-title">{draft.title}</h5>
-					  <p class="card-description">{getText(draft.content)}</p>
+					  <p class="card-description truncate ">{getText(draft.content)}</p>
 					  <div class="card-status {getColor(draft.status)}">{draft.status}</div>
 					  <a href="dashboard/{draft.title}" class="card-link">Read more</a>
 					</div>
@@ -253,7 +274,44 @@
 			  {/if}
 			{/await}
 		  {/if}
-		
+	  {:else if currentPage === "Profile"}
+	 
+		<section class="flex flex-col justify-center items-center w-full md:w1/2 lg:w-3/4">
+			<form class="flex flex-col w-full gap-2" method="post"
+			enctype="multipart/form-data"
+			use:enhance
+			>
+				<div class="flex flex-row justify-center items-center gap-2" >
+					<img src="{pfPhoto}" class="rounded-full bg-gray-200 w-[15%] h-[17%] md:w-[10%] md:h-[100%]" alt="pfPhoto" />
+					
+						<label for="profile" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+						  Change Profile Image
+						  <input type="file" id="profile" accept="image/*" class="hidden" on:change={handleCoverPhoto}>
+						</label>          
+					
+				</div>	
+				<div class="mb-6 pt-3 rounded bg-gray-200">
+					<label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="phone">Name</label>
+					<input type="text" id="name" name="name" bind:value={name} class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3">
+				</div>
+				<div class="mb-3 pt-3 rounded bg-gray-200">
+					<label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="email">Email</label>
+					<input type="text" id="email" name="email" bind:value={email} class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3" disabled>
+				</div>
+				
+				
+				<div class="flex justify-between">
+					<a href="/" class="text-sm text-red-600 hover:text-red-700 hover:underline mb-6">Forgot your password?</a>
+					{#if form?.serror}
+						<div class="text-red-900">{form?.errormsg}</div>
+					{/if}
+				</div>
+				
+				<button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded shadow-lg hover:shadow-xl transition duration-200" type="button" on:click={save}>Save</button>
+				
+			</form>
+		</section>
+	
 	  {/if}
 	</div>
   </div>

@@ -4,6 +4,7 @@ import { put } from "@vercel/blob";
 import { writeFileSync } from 'fs';
 import {API_KEY,CLOUD_NAME,API_SECRET} from "$env/static/private";
 import { v2 as cloudinary } from 'cloudinary';
+import { goto } from '$app/navigation';
 
 cloudinary.config({
     cloud_name: CLOUD_NAME ,
@@ -188,5 +189,38 @@ export const actions = {
        return{sucess:true}
        
         
+    },
+    saveProfile: async({request,locals})=>{
+        let data=await request.formData();
+        let name = data.get('name')
+        let file = data.get('profile')
+        if(file){
+            let filedata=await file.arrayBuffer();
+            const buffer = new Uint8Array(filedata);
+			const uploadStream = await new Promise((resolve, reject) => {
+				cloudinary.uploader
+					.upload_stream({
+                        filename_override:file.name,
+                        folder: '',
+                        resource_type: 'image'}, function (error, result) {
+						if (error) {
+							return reject(error);
+						}
+						return resolve(result);
+					})
+					.end(buffer);
+			});
+           if(!uploadStream.Error){
+            file=uploadStream.url;
+           }else{
+            coverPhoto=null;
+           }
+        }
+        if(locals.user){
+        await handlers.save(locals.user,name,file);
+        }else{
+            goto("/login")
+        }
+        return ({error:false})
     }
 };
