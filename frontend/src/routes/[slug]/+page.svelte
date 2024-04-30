@@ -1,5 +1,6 @@
 <script>
 	import CommentBox from '$lib/components/commentBox.svelte';
+	import BlogCard from '../../lib/components/blogCard.svelte';
 	import ShowLoading from '../../lib/components/showLoading.svelte';
 
 	export let data;
@@ -73,6 +74,7 @@
 							}}>{showComments ? 'Hide Comments \u2191' : 'Show Comments \u2193'}</button
 						>
 					</article>
+					
 				</div>
 				{#if showComments}
 					<section
@@ -125,6 +127,25 @@
 						</main>
 					</section>
 				{/if}
+				<div class="flex mx-auto max-w-screen-xl px-2 m-2">
+					<div class="mx-auto w-full max-w-3xl">
+						<div class="text-3xl font-extrabold text-black">Related Articles</div>
+						{#await data.blogs}
+							<ShowLoading/>
+						{:then drafts} 
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+							{#each drafts as draft}
+								{#if draft.topic===blog.topic && draft.title!==blog.title}
+								<BlogCard draft={draft} user={data.user} />
+								{/if}
+		
+							{/each}
+						</div>
+						{/await}
+						
+
+				</div>
+				</div>
 			{:else}
 				<div class="flex flex-col justify-center items-center w-full h-screen">
 					<div>

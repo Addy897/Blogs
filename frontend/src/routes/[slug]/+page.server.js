@@ -2,15 +2,18 @@ import { handlers } from '../../lib/handlers.js'
 
 export async function load({params,locals}) {
     
-    const getAllDesign=async(title)=>{
+    const getBlogs=async(title)=>{
         let blog=await handlers.getBlogs(title)
         return blog.blog;
     }
-      
-     handlers.incView(params.slug)
+    const getAllDesign=async(title)=>{
+        const drafts=await handlers.getAllBlogs(title)
+        return drafts.blog;
+    }
+    handlers.incView(params.slug)
 
     
-    return{user:locals.user,blog:getAllDesign(params.slug)}
+    return{user:locals.user,blog:getBlogs(params.slug),blogs:getAllDesign(null)}
 
 
 }
