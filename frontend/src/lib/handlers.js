@@ -161,8 +161,8 @@ static async addGoogle(guser){
       Code = 404;
       msg = error;
     }
-    if (Code !== 200 || !user) {
-      return ({ "Code": Code, "errorMessage": msg });
+    if (Code !== 200 || user.Error===true) {
+      return ({ "Code": 404, "errorMessage": user.message || msg });
     } else {
       return ({ Code: Code, user: user })
     }
@@ -192,8 +192,8 @@ static async addGoogle(guser){
       Code = 404;
       msg = error;
     }
-    if (Code !== 200 || !user) {
-      return ({ "Code": Code, "errorMessage": msg });
+    if (Code !== 200 || user.Error===true) {
+      return ({ "Code": 404, "errorMessage": user.message });
     } else {
       return ({ Code: Code, user: user })
     }

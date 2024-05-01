@@ -27,9 +27,8 @@ export const actions = {
             }
             if (password) {
                 let user = await handlers.singIn(email,phone, password)
-
+               
                 if (!user.user || user.Code !== 200) {
-                    console.log(user)
                     if (user.errorMessage) {
                         return fail(400, { errormsg: user.errorMessage, serror: true });
                     }
