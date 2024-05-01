@@ -176,7 +176,25 @@ def register(request:HttpRequest):
             try:
                 passHash=make_password(data.get("password"))
                 phone=data.get("phone")
-                print(phone,data)
+                email=data.get("email")
+                
+                
+                if (phone and email):
+                    puser=EUsers.objects.filter(phone=phone)
+                    euser=EUsers.objects.filter(email=email)
+                    if(len(puser)>0 or len(euser)>0):
+                        raise ValueError("User Already Exist")
+                elif(phone):
+                    
+                    user=EUsers.objects.filter(phone=phone)
+                    if(len(user)>0):
+                        raise ValueError("User Already Exist")
+                else:
+                    user=EUsers.objects.filter(email=email)
+                    if(len(user)>0):
+                        raise ValueError("User Already Exist")
+                
+
                 user=EUsers(email=data.get("email"),phone=phone,name=data.get("name"),password=passHash)
                 user.save()
             except IntegrityError as e:
@@ -211,7 +229,7 @@ def login(request:HttpRequest):
                 else:
                     user=EUsers.objects.filter(email=email)
                 if(len(user)!=1):
-                    raise ValueError("No EUsers Found")
+                    raise ValueError("No User Found")
                 user=user[0]
                 passHash=user.password
                 if(not check_password(data.get("password"),passHash)):
