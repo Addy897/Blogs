@@ -8,11 +8,11 @@ ACCOUNT_LEVELS = [("Premium 1","Premium1"),("Premium 2","Premium2"),("Premium 3"
 
 TOPICS = [("Topic 1","Topic 1"),("Topic 2","Topic 2"),("Topic 3","Topic 3"),("Misc","Misc")]
 
-ACCESS_LEVELS = (
+ACCESS_LEVELS = [
     ("Read","Read"),
     ( "ReadWrite","ReadWrite"),
     ("Admin", "Admin"),
-)
+]
 
 STATUS_LEVELS = [
     ("Draft", "Draft"),
