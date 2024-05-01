@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'Ro3V26XzR_Go4SaU5HEq8YuaMe-B8MjNNrNRhSMmKqm6iorQMPQznY2Gc3eFSDrfylP-P0dKmyJ4fxUY_C_Nqw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*","*.vercel.app","blogs-backend-28wkfknvj-addy897s-projects.vercel.app"]
 API_TOKEN='random'
@@ -75,15 +75,20 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+POSTGRES_USER="default"
+POSTGRES_HOST="ep-quiet-bread-a18y9t6k-pooler.ap-southeast-1.aws.neon.tech"
+POSTGRES_PASSWORD="L4FunDbMmVy6"
+POSTGRES_DATABASE="verceldb"
+POSTGRES_PORT="5432"
 
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql',
-       'NAME': 'verceldb',
-       'USER': 'default',
-       'PASSWORD': 'DT1lzxbJr4pM',
-       'HOST': 'ep-super-rain-a4ejq2rb-pooler.us-east-1.aws.neon.tech',
-       'PORT': '5432',
+       'NAME': POSTGRES_DATABASE,
+       'USER': POSTGRES_USER,
+       'PASSWORD': POSTGRES_PASSWORD,
+       'HOST': POSTGRES_HOST,
+       'PORT': POSTGRES_PORT,
    }
 }
 
