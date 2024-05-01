@@ -132,7 +132,7 @@ static async addGoogle(guser){
   if (Code !== 200 || !user) {
     return ({ "Code": Code, "errorMessage": msg });
   } else {
-    return ({ Code: Code, user: user.user })
+    return ({ Code: Code, user: user })
   }
 }
   static async signUp(details) {
@@ -156,7 +156,6 @@ static async addGoogle(guser){
         })
       });
       user = await rawResponse.json();
-      console.log(user)
     } catch (error) {
       console.log("Error: ",error)
       Code = 404;
@@ -165,7 +164,7 @@ static async addGoogle(guser){
     if (Code !== 200 || !user) {
       return ({ "Code": Code, "errorMessage": msg });
     } else {
-      return ({ Code: Code, user: user.user })
+      return ({ Code: Code, user: user })
     }
   }
 
@@ -196,7 +195,7 @@ static async addGoogle(guser){
     if (Code !== 200 || !user) {
       return ({ "Code": Code, "errorMessage": msg });
     } else {
-      return ({ Code: Code, user: user.user })
+      return ({ Code: Code, user: user })
     }
   }
   static async getUserBlog(user,title=null) {
@@ -222,7 +221,7 @@ static async addGoogle(guser){
 
     return ({draft:response})
   }
-  static async setUserBlog(user,title, content,coverPhoto,status,topic) {
+  static async setUserBlog(user,title,description, content,cover_photo,status,topic) {
     let r = { error: false }
     await fetch(BACKEND_URL + "setUserBlog/", {
       method: "POST",
@@ -232,10 +231,11 @@ static async addGoogle(guser){
       body: JSON.stringify({
         'user': user,
         'title':title,
+        'description':description,
         'content': content,
         'topic': topic,
         'status': status ,
-        'coverPhoto':coverPhoto
+        'cover_photo':cover_photo
       })
     }).then(async (respo) => {
       r = await respo.json()
@@ -249,13 +249,13 @@ static async addGoogle(guser){
     return {error:false,resposne:r}
 
   }
-  static async likeCount(user, refId) {
+  static async likeCount(user, ref_id) {
     let r = { code: false }
     const res = await fetch(BACKEND_URL + "updateLikes/", {
       method: "POST", headers: {
         'api-token': 'random',
       }, body: JSON.stringify({
-        "refId": String(refId),
+        "ref_id": String(ref_id),
         "user": user
       })
     }).then(async (response)=>{
@@ -263,13 +263,13 @@ static async addGoogle(guser){
     })
     return r;
   }
-  static async incView(refId) {
+  static async incView(ref_id) {
     let r = { code: false }
     const res = await fetch(BACKEND_URL + "incView/", {
       method: "POST", headers: {
         'api-token': 'random',
       }, body: JSON.stringify({
-        "refId": refId
+        "ref_id": ref_id
       })
     }).then(async (response)=>{
       r = await response.json();
@@ -279,7 +279,7 @@ static async addGoogle(guser){
     return r;
   }
   static async save(user,name,file) {
-    let r = { code: false }
+    let r = { error: true }
     const res = await fetch(BACKEND_URL + "saveProfile/", {
       method: "POST", headers: {
         'api-token': 'random',
@@ -377,13 +377,13 @@ static async addGoogle(guser){
     })
     return r;
   }
-  static async publishUserBlog(user, refId) {
+  static async publishUserBlog(user, ref_id) {
     let r = { error: false }
     const res = await fetch(BACKEND_URL + "publishUserBlog/", {
       method: "POST", headers: {
         'api-token': 'random',
       }, body: JSON.stringify({
-        "refId": String(refId),
+        "ref_id": String(ref_id),
         "user": user
       })
     }).then(async (response)=>{
@@ -391,13 +391,13 @@ static async addGoogle(guser){
     })
     return r;
   }
-  static async edithUserBlog(user, md,refId) {
+  static async edithUserBlog(user, md,ref_id) {
     let r = { error: false }
     const res = await fetch(BACKEND_URL + "editUserBlog/", {
       method: "POST", headers: {
         'api-token': 'random',
       }, body: JSON.stringify({
-        "refId": String(refId),
+        "ref_id": String(ref_id),
         "md": md,
         "user": user
       })

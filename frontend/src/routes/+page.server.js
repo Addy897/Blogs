@@ -46,15 +46,19 @@ export const actions = {
   },
   like: async({request,locals,cookies})=>{
     if(locals.user){
-      const {refId}= await request.json();
-      let r=await handlers.likeCount(locals.user,refId)
+      const {ref_id}= await request.json();
+      let r=await handlers.likeCount(locals.user,ref_id)
         let error=r.error
         if(!error){
-          cookies.delete('user', { path: "/" })
+          cookies.delete('user',{ httpOnly: true,
+            sameSite: 'strict',
+            secure: false,
+            path: '/',
+            maxAge: 60 * 60*24*7})
           let token = null
             try{
               
-                token= await signJWT({user:r.user})
+                token= await signJWT({user:r})
             }catch(e){
                 console.log(e)
                 throw redirect(303,"/login")
@@ -67,6 +71,7 @@ export const actions = {
                 secure: false,
                 path: '/',
                 maxAge: 60 * 60*24*7}) 
+            locals.user=r
         }
       }
   }

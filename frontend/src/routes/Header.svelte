@@ -45,7 +45,7 @@
                 <i class={!isVisible ? "fa fa-bars" : "fa fa-xmark"}></i>
             </button>
         </div>
-        <div class="hidden md:flex flex-row text-xl font-sans gap-5">
+        <div class="hidden md:flex flex-row justify-center items-center text-xl font-sans gap-5">
             <a
                 href="/"                    
                 class="border-solid  block px-3 py-2 rounded-lg font-medium {isactive!=='home'?"text-black":"text-red-600"}"
@@ -65,8 +65,8 @@
                     on:click={()=>{changeIsActive("dashboard")}}
                     >{$loginStore.userName}
                         <img
-                            class="rounded-full h-7"
-                            src={$loginStore.pfPhoto}
+                            class="rounded-full h-12 w-12"
+                            src={$loginStore.pf_photo}
                             alt=""
                             referrerpolicy="no-referrer"
                         />
@@ -132,8 +132,8 @@
                 class="text-black  flex flex-row px-3 py-2 rounded-md font-medium gap-2"
                
                 >{$loginStore.userName}<img
-                class="rounded-full h-7 "
-                src={$loginStore.pfPhoto}
+                class="rounded-full h-7 w-7 "
+                src={$loginStore.pf_photo}
                 alt=""
                 referrerpolicy="no-referrer"
             /></a

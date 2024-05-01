@@ -6,7 +6,7 @@ export async function load({url,params,locals}) {
         let draft=url.searchParams.get('for')
         if(draft==="draft"){
             let blog=await handlers.getUserBlog(locals.user.email,params.slug)
-            if(blog.draft[0].uid===locals.user.uid){
+            if(blog.draft[0].author.uid===locals.user.uid){
             return{user:locals.user,blog:blog.draft}
             }else{
                 error(404,"Not Found");
@@ -17,7 +17,7 @@ export async function load({url,params,locals}) {
         return{user:locals.user,review:forReview.draft}
     }else{
     let blog=await handlers.getUserBlog(locals.user.email,params.slug)
-    if(blog.draft && blog.draft[0].uid===locals.user.uid){
+    if(blog.draft && blog.draft[0].author.uid===locals.user.uid){
     return{user:locals.user,blog:blog.draft}
     }else{
         error(404,"Not Found");
@@ -35,9 +35,9 @@ export const actions = {
 
     },
     setMD:async ({request,locals})=>{
-        const {md,refId}= await request.json();
+        const {md,ref_id}= await request.json();
         if(locals.user){
-            let resposne=await handlers.edithUserBlog(locals.user,md,refId)
+            let resposne=await handlers.edithUserBlog(locals.user,md,ref_id)
             if(resposne.error){
                 return resposne
             }
@@ -46,9 +46,9 @@ export const actions = {
 
     },
     pub:async ({request,locals})=>{
-        const {refId}= await request.json();
+        const {ref_id}= await request.json();
         if(locals.user){
-            let resposne=await handlers.publishUserBlog(locals.user,refId)
+            let resposne=await handlers.publishUserBlog(locals.user,ref_id)
             if(resposne.error){
                 return resposne
             }
@@ -57,9 +57,9 @@ export const actions = {
 
     },
     rpub:async ({request,locals})=>{
-        const {refId}= await request.json();
+        const {ref_id}= await request.json();
         if(locals.user){
-            let resposne=await handlers.publishUserBlog(locals.user,refId)
+            let resposne=await handlers.publishUserBlog(locals.user,ref_id)
             if(resposne.error){
                 return resposne
             }

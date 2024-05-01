@@ -10,7 +10,7 @@
     export let markdownTitle;
     export let markdownContent;
     export let markdownMode;
-    export let coverPhoto;
+    export let cover_photo;
     let htmlContent = "";
     let toolboxVisible = false;
     let helpVisible = false;
@@ -107,7 +107,7 @@
     </div>
     {/if}
     {#if markdownMode}
-    <div class="w-1/2"><img class="rounded-xl" src={coverPhoto} alt="CoverPhoto"/></div>
+    <div class="w-1/2"><img class="rounded-xl" src={cover_photo} alt="cover_photo"/></div>
         <h1 class="underline">{markdownTitle}</h1>
       <div class="preview p-4 w-full sm:w-auto">{@html htmlContent}</div>
     {:else}

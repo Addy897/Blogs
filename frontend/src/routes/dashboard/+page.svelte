@@ -15,6 +15,9 @@
 	}
   
 	let currentPage = Pages[3];
+	$: if(currentPage==="New Blog" && data.user.access_level !== "Read"){
+		goto("/new")
+	}
 	function setoc(p) {
 	  currentPage = p;
 	}
@@ -38,30 +41,33 @@
 	}
 	let email=data.user.email || data.user.phone;
 	let name=data.user.displayName;
-	let pfPhoto=data.user.pfPhoto;
-	let coverPhoto=null;
+	let pf_photo=data.user.pf_photo;
+	let cover_photo=null;
 	const handleCoverPhoto=(event)=>{
-		coverPhoto = event.target.files[0]; 
-		if (coverPhoto) {
+		cover_photo = event.target.files[0]; 
+		if (cover_photo) {
 			const reader = new FileReader();
 			reader.onloadend = () => {
-			pfPhoto = reader.result; 
+			pf_photo = reader.result; 
 			};
-			reader.readAsDataURL(coverPhoto); 
+			reader.readAsDataURL(cover_photo); 
 		}
 
 	}
 	const save = async (e)=>{
 		let formData = new FormData();
 		formData.append('name',name);
-		if(coverPhoto){
-		formData.append('profile',coverPhoto)
+		if(cover_photo){
+		formData.append('profile',cover_photo)
 		}
 		await fetch("/dashboard?/saveProfile",{
             method:"POST",
             body:formData
         }).then(async (response)=>{
-        	await response.json()
+        	response = await response.json()
+			if(!response.error){
+				window.location.reload()
+			}
             
             
         });
@@ -194,10 +200,10 @@
 				<section class="section">
 					{#each Object.entries(d.draft) as [key, draft]}
 						<div class="card">
-						<img src={draft.coverPhoto} alt="">
+						<img src={draft.cover_photo} alt="">
 						<div class="card-content">
 							<h5 class="card-title">{draft.title}</h5>
-							<p class="card-description  truncate">{getText(draft.content)}</p>
+							<p class="card-description  truncate">{draft.description}</p>
 							<div class="card-status {getColor(draft.status)}">{draft.status}</div>
 							<a href="dashboard/{draft.title}/?for=draft" class="card-link">Read more</a>
 						</div>
@@ -239,8 +245,7 @@
 			</div>
 		  </div>
 		</section>
-	  {:else if currentPage === 'New Blog' && data.user.access_level !== "Read"}
-	  	<div class="hidden">{goto("/new")}</div>
+	  	
 	  {:else if currentPage === "For Review"}
 		
 		  {#if data.extra}
@@ -252,10 +257,10 @@
 			  <section class="section">
 				{#each Object.entries(d.draft) as [key, draft]}
 				  <div class="card">
-					<img src={draft.coverPhoto} alt="">
+					<img src={draft.cover_photo} alt="">
 					<div class="card-content">
 					  <h5 class="card-title">{draft.title}</h5>
-					  <p class="card-description truncate ">{getText(draft.content)}</p>
+					  <p class="card-description truncate ">{draft.description}</p>
 					  <div class="card-status {getColor(draft.status)}">{draft.status}</div>
 					  <a href="dashboard/{draft.title}" class="card-link">Read more</a>
 					</div>
@@ -272,8 +277,17 @@
 			  </div>
 			</section>
 			  {/if}
+			{:catch e}
+			<section>
+				<div class="card">
+				  <div class="card-content">
+					<div class="card-title">Error</div>
+					<div>{e}</div>
+				  </div>
+				</div>
+			  </section>
 			{/await}
-		  {/if}
+			{/if}
 	  {:else if currentPage === "Profile"}
 	 
 		<section class="flex flex-col justify-center items-center w-full md:w1/2 lg:w-3/4">
@@ -282,7 +296,7 @@
 			use:enhance
 			>
 				<div class="flex flex-row justify-center items-center gap-2" >
-					<img src="{pfPhoto}" class="rounded-full bg-gray-200 w-[15%] h-[17%] md:w-[10%] md:h-[100%]" alt="pfPhoto" />
+					<img src="{pf_photo}" class="rounded-full bg-gray-200 w-24 h-24" alt="pf_photo" />
 					
 						<label for="profile" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
 						  Change Profile Image
@@ -295,7 +309,7 @@
 					<input type="text" id="name" name="name" bind:value={name} class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3">
 				</div>
 				<div class="mb-3 pt-3 rounded bg-gray-200">
-					<label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="email">Email</label>
+					<label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="email">Email or Phone</label>
 					<input type="text" id="email" name="email" bind:value={email} class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3" disabled>
 				</div>
 				

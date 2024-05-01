@@ -18,12 +18,12 @@
         }
     }
 
-    const like = (e, l, refId) => {
+    const like = (e, l, ref_id) => {
         if (user) {
             fetch("/?/like", {
                 method: "POST",
                 body: JSON.stringify({
-                    refId: String(refId),
+                    ref_id: String(ref_id),
                 }),
             });
             if (e.srcElement.className.includes("fa-regular")) {
@@ -42,13 +42,7 @@
         }
     }
 
-    function getText(content) {
-        if (browser && window) {
-            var el = window.document.createElement('html');
-            el.innerHTML = content;
-            return el.innerText;
-        }
-    }
+    
     draft.link="/"+draft.title;
 </script>
 <style lang="postcss">
@@ -60,7 +54,7 @@
 <div class="bg-white flex flex-col rounded-lg shadow-md overflow-hidden transition-transform duration-500 transform hover:scale-105 gap-2 p-2">
     
     <a href="{draft.link}">
-        <img src={draft.coverPhoto} alt="{draft.title}" class="h-48 w-full object-cover rounded-xl">
+        <img src={draft.cover_photo} alt="{draft.title}" class="h-48 w-full object-cover rounded-xl">
     </a>
     <div class="flex flex-row gap-4">
     <div class=" rounded-full p-1 px-4  text-center text-green-500 border-2 border-green-500 flex flex-row justify-center items-center gap-2" >
@@ -74,7 +68,7 @@
     </div></div>
     <div class="p-4">
         <a href="{draft.link}" class="text-gray-900 font-bold text-xl md:text-2xl lg:text-3xl mb-2 hover:text-blue-700 transition duration-300">{draft.title}</a>
-        <p class="text-gray-700 mb-4 line-clamp-3">{getText(draft.content)}</p>
+        <p class="text-gray-700 mb-4 line-clamp-3">{draft.description}</p>
       <div class="flex flex-col">
         <div class="flex flex-row gap-2">
             {draft.views} Impressions
@@ -92,11 +86,11 @@
             <button
                 class="flex items-center text-gray-700 hover:text-red-500 focus:outline-none transition duration-300"
                 on:click={(e) => {
-                    draft.likes = like(e, draft.likes, draft.refId);
+                    draft.likes = like(e, draft.likes, draft.ref_id);
                 }}
                 aria-label="Like"
             >
-                <i class={user && user.likedPosts.includes(draft.refId) ? "fa fa-heart text-red-500" : "fa-regular fa-heart"}></i>
+                <i class={user && user.likedPosts.includes(draft.ref_id) ? "fa fa-heart text-red-500" : "fa-regular fa-heart"}></i>
                 <span class="ml-1">{draft.likes}</span>
             </button>
         </div>

@@ -3,9 +3,14 @@
     import { onMount } from "svelte";
     import { browser } from '$app/environment';
 	import ShowLoading from "../../lib/components/showLoading.svelte";
+  import BlogView from '$lib/components/blogView.svelte';
+	import { loginStore } from '../../stores/loginstore';
+
+
 
     let loading =false;
     let markdownTitle = "";
+    let markdownDescription = "";
     let markdownContent = "";
     let htmlContent = "";
     let markdownMode = false;
@@ -94,8 +99,9 @@
         formData.append(String((i+1)),f[i]);
       }
       formData.append("title",markdownTitle)
+      formData.append("description",markdownDescription)
       formData.append("topic",topic)
-      formData.append("coverPhoto",coverPhoto)
+      formData.append("cover_photo",cover_photo)
       formData.append("content",markdownContent)
         await fetch("/dashboard?/publish",{
             method:"POST",
@@ -129,8 +135,9 @@
         formData.append(String((i+1)),f[i]);
       }
       formData.append("title",markdownTitle)
+      formData.append("description",markdownDescription)
       formData.append("topic",topic)
-      formData.append("coverPhoto",coverPhoto)
+      formData.append("cover_photo",cover_photo)
       formData.append("content",markdownContent)
         await fetch("/dashboard?/draft",{
             method:"POST",
@@ -155,18 +162,20 @@
         
     }
     let topics=['Topic 1','Topic 2','Topic 3','Misc']
-    let topic='0';
-    let iSrc = ''; 
-    let coverPhoto=null;
-    $: if(!iSrc){coverPhoto=null};
+    let topic=topics[0];
+    let iSrc = 'https://flowbite.com/docs/images/blog/image-1.jpg'; 
+    let cover_photo=null;
+    $: if(!iSrc){cover_photo=null;iSrc="https://flowbite.com/docs/images/blog/image-1.jpg"};
+    
+    $: blog ={author:{name:$loginStore.userName},cover_photo:iSrc,date:new Date().getDate(),title:markdownTitle,description:markdownDescription,content:htmlContent,topic:topic}
 function handleCoverPhoto(event) {
-   coverPhoto = event.target.files[0]; 
-  if (coverPhoto) {
+   cover_photo = event.target.files[0]; 
+  if (cover_photo) {
     const reader = new FileReader();
     reader.onloadend = () => {
       iSrc = reader.result; 
     };
-    reader.readAsDataURL(coverPhoto); 
+    reader.readAsDataURL(cover_photo); 
   }
 }
   </script>
@@ -223,29 +232,27 @@ function handleCoverPhoto(event) {
     </div>
     {/if}
     {#if markdownMode}
-        {#if iSrc}
-        <img src={iSrc} class="w-[40%] rounded-xl" alt=" "/>
-        {/if}
-        <h1 class="underline">{markdownTitle}</h1>
-      <div class="preview p-4 w-full sm:w-auto">{@html htmlContent}</div>
+        <BlogView blog={blog}/>
     {:else}
       <form class="flex flex-col items-center w-full p-4 gap-2" method="post">
         <div class="flex gap-2">
-          <label for="coverPhoto" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <label for="cover_photo" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Add Cover Image
-            <input type="file" id="coverPhoto" accept="image/*" class="hidden" on:change={handleCoverPhoto}>
+            <input type="file" id="cover_photo" accept="image/*" class="hidden" on:change={handleCoverPhoto}>
           </label>          
-          {#if iSrc}
+          {#if cover_photo}
           <img src={iSrc} alt=" " class="h-10 w-10 rounded-full">
           <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" on:click={() => iSrc=null}>Remove</button>          {/if}
         </div>
         <input type="text" placeholder="Title" bind:value={markdownTitle} class="mb-2 p-2 border border-gray-400 rounded">
+        <input type="text" placeholder="Description" bind:value={markdownDescription} class="mb-2 p-2 border border-gray-400 rounded">
+
         <select bind:value={topic} required>
             {#each Object.entries(topics) as [index,value] }
               {#if index===0}
-              <option value="{index}" selected="selected">{value}</option>
+              <option value="{value}" selected="selected">{value}</option>
               {:else}
-              <option value="{index}">{value}</option>
+              <option value="{value}">{value}</option>
 
               {/if}
             {/each}

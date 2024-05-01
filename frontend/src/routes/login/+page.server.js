@@ -77,12 +77,12 @@ export const actions = {
                 if (password !== cpassword) {
                     return fail(400, { errormsg: "Passwords are not same", serror: true });
                 }
-                let user = await handlers.signUp({ email: email, password: password, name: name })
+                let user = await handlers.signUp({ email: email,phone:phone, password: password, name: name })
                 if (!user.user || user.Code !== 200) {
                     if (user.errorMessage) {
                         return fail(400, { errormsg: user.errorMessage, serror: true });
                     }
-                    return fail(400, { errormsg: "Invalid Id Or Password", serror: true });
+                    return fail(400, { errormsg: "Unknown Error Occured", serror: true });
 
                 }
                 let token = null

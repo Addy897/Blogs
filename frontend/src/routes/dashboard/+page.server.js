@@ -1,10 +1,10 @@
 import { redirect } from '@sveltejs/kit'
 import { handlers } from '../../lib/handlers'
-import { put } from "@vercel/blob";
-import { writeFileSync } from 'fs';
+
 import {API_KEY,CLOUD_NAME,API_SECRET} from "$env/static/private";
 import { v2 as cloudinary } from 'cloudinary';
 import { goto } from '$app/navigation';
+import { signJWT } from '../../lib/jwtHadlers';
 
 cloudinary.config({
     cloud_name: CLOUD_NAME ,
@@ -39,14 +39,14 @@ export const actions = {
         
         let length=data.get('length')
         let markdownContent=data.get('content')
-        let coverPhoto=data.get('coverPhoto')
-        if(coverPhoto!=='null'){
-            let filedata=await coverPhoto.arrayBuffer();
+        let cover_photo=data.get('cover_photo')
+        if(cover_photo!=='null'){
+            let filedata=await cover_photo.arrayBuffer();
             const buffer = new Uint8Array(filedata);
 			const uploadStream = await new Promise((resolve, reject) => {
 				cloudinary.uploader
 					.upload_stream({
-                        filename_override:coverPhoto.name,
+                        filename_override:cover_photo.name,
                         folder: '',
                         resource_type: 'image'}, function (error, result) {
 						if (error) {
@@ -57,14 +57,16 @@ export const actions = {
 					.end(buffer);
 			});
            if(!uploadStream.Error){
-            coverPhoto=uploadStream.url;
+            cover_photo=uploadStream.url;
            }else{
-            coverPhoto=null;
+            cover_photo=null;
            }
         }else{
-            coverPhoto=null
+            cover_photo=null
         }
         let title=data.get('title')
+        let description=data.get('description')
+
         let topic=data.get('topic')
         let url_list=[]
         for(let i=0;i<length;i++){
@@ -104,7 +106,7 @@ export const actions = {
                     return match
                 });
         }
-       let rawResponse=await handlers.setUserBlog(locals.user,title,markdownContent,coverPhoto,"2",topic)
+       let rawResponse=await handlers.setUserBlog(locals.user,title,description,markdownContent,cover_photo,"InReview",topic)
        if (rawResponse.error) {
         return {error:true,msg:rawResponse.error}
        }
@@ -116,17 +118,18 @@ export const actions = {
         let length=data.get('length')
         let markdownContent=data.get('content')
         let title=data.get('title')
+        let description=data.get('description')
         let topic=data.get('topic')
 
-        let coverPhoto=data.get('coverPhoto')
+        let cover_photo=data.get('cover_photo')
        
-        if(coverPhoto!=='null'){
-            let filedata=await coverPhoto.arrayBuffer();
+        if(cover_photo!=='null'){
+            let filedata=await cover_photo.arrayBuffer();
             const buffer = new Uint8Array(filedata);
 			const uploadStream = await new Promise((resolve, reject) => {
 				cloudinary.uploader
 					.upload_stream({
-                        filename_override:coverPhoto.name,
+                        filename_override:cover_photo.name,
                         folder: '',
                         resource_type: 'image'}, function (error, result) {
 						if (error) {
@@ -137,12 +140,12 @@ export const actions = {
 					.end(buffer);
 			});
            if(!uploadStream.Error){
-            coverPhoto=uploadStream.url;
+            cover_photo=uploadStream.url;
            }else{
-            coverPhoto=null;
+            cover_photo=null;
            }
         }else{
-            coverPhoto=null
+            cover_photo=null
 
         }
         let url_list=[]
@@ -171,7 +174,7 @@ export const actions = {
            else{
             return {error:true,msg:uploadStream.Error}
            }
-            url_list=[...url_list,url.url]
+            url_list=[...url_list,url]
         }
         if(url_list.length>0){
                 markdownContent=markdownContent.replace(/\!\[Image(\d+)\]/g, (match, index) => {
@@ -182,7 +185,7 @@ export const actions = {
                     return match
                 });
         }
-       let rawResponse=await handlers.setUserBlog(locals.user,title,markdownContent,coverPhoto,"1",topic)
+       let rawResponse=await handlers.setUserBlog(locals.user,title,description,markdownContent,cover_photo,"Draft",topic)
        if (rawResponse.Code !== 200) {
         return {error:true,msg:rawResponse.errorMessage}
        }
@@ -190,7 +193,7 @@ export const actions = {
        
         
     },
-    saveProfile: async({request,locals})=>{
+    saveProfile: async({request,cookies,locals})=>{
         let data=await request.formData();
         let name = data.get('name')
         let file = data.get('profile')
@@ -213,13 +216,40 @@ export const actions = {
            if(!uploadStream.Error){
             file=uploadStream.url;
            }else{
-            coverPhoto=null;
+            cover_photo=null;
            }
         }
         if(locals.user){
-        await handlers.save(locals.user,name,file);
-        }else{
-            goto("/login")
+        let r=await handlers.save(locals.user,name,file);
+        let error=r.error
+        if(!error){
+          cookies.delete('user',{ httpOnly: true,
+            sameSite: 'strict',
+            secure: false,
+            path: '/',
+            maxAge: 60 * 60*24*7})
+          let token = null
+            try{
+              
+                token= await signJWT({user:r})
+            }catch(e){
+                console.log(e)
+                throw redirect(303,"/login")
+            }
+            if(!token){
+                throw redirect(303,"/login")
+            }
+            cookies.set("user",token,{ httpOnly: true,
+                sameSite: 'strict',
+                secure: false,
+                path: '/',
+                maxAge: 60 * 60*24*7}) 
+            locals.user=r
+            return ({error:false})
+        }
+      }
+        else{
+            throw redirect(301,'/login')
         }
         return ({error:false})
     }

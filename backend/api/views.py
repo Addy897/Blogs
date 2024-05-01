@@ -110,6 +110,7 @@ def getAllBlogs(request:HttpRequest):
     else:
         return HttpResponseNotFound()
 
+
 @csrf_exempt
 def addGoogle(request:HttpRequest):
     if(request.method=="POST"):
@@ -137,41 +138,6 @@ def addGoogle(request:HttpRequest):
     else:
         return HttpResponseNotFound()
 
-@csrf_exempt
-def getUserBlog(request:HttpRequest):
-    if(request.method=="POST"):
-        if(request.headers.get("api-token")==settings.API_TOKEN):
-            data:dict=json.loads(request.body.decode())
-           
-            try:
-                user=EUsers.objects.filter(email=data.get("email"))
-                if(len(user)!=1):
-                    raise ValueError("No EUsers Found")
-                title=data.get('title')
-                
-                if(title!="null"):
-                    BlogData=Blog.objects.filter(uid=user[0].uid,title=title);
-                else:
-                    BlogData=Blog.objects.filter(uid=user[0].uid);
-                
-                if(len(BlogData)<1):
-                    res=None
-                else:
-                    res=[]
-                    for i in BlogData:
-                        res.append(i.toJson())
-                    
-                return JsonResponse({"response":res})
-                
-                
-            except ValueError as e:
-                print(e)
-                return(JsonResponse({"error":True,"errorMessage":str(e)}))
-            
-        else:
-            return JsonResponse({"error":True,"errorMessage":"Invalid Token"})
-    else:
-        return HttpResponseNotFound()
 
 @csrf_exempt
 def register(request:HttpRequest):

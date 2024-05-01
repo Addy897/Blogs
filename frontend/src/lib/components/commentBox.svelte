@@ -35,7 +35,7 @@
 			<p class="inline-flex items-center mr-3 text-sm text-gray-900  font-semibold">
 				<img
 					class="mr-2 w-6 h-6 rounded-full"
-					src={comments.pfPhoto}
+					src={comments.pf_photo}
 					alt={comments.name}
 					referrerpolicy="no-referrer"
 				/>{comments.name}
