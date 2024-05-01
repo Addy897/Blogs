@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'Ro3V26XzR_Go4SaU5HEq8YuaMe-B8MjNNrNRhSMmKqm6iorQMPQznY2Gc3eFSDrfylP-P0dKmyJ4fxUY_C_Nqw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*","*.vercel.app","blogs-backend-28wkfknvj-addy897s-projects.vercel.app"]
 API_TOKEN='random'
