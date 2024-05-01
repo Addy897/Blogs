@@ -24,11 +24,13 @@
                     </svg>
                     Verfied
                 </div>
+                {#if blog.topic}
                 <div
                     class=" rounded-full p-1 px-4 text-center text-nowrap text-gray-500 border-2 border-gray-500 flex flex-row justify-center items-center gap-2"
                 >
                     {blog.topic}
                 </div>
+                {/if}
                 <div
                     class=" rounded-full p-1 px-4 text-center text-nowrap text-gray-500 border-2 border-gray-500 flex flex-row justify-center items-center gap-2"
                 >

@@ -48,6 +48,7 @@ export const actions = {
     if(locals.user){
       const {ref_id}= await request.json();
       let r=await handlers.likeCount(locals.user,ref_id)
+
         let error=r.error
         if(!error){
           cookies.delete('user',{ httpOnly: true,

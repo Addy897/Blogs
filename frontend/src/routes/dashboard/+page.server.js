@@ -221,6 +221,7 @@ export const actions = {
         }
         if(locals.user){
         let r=await handlers.save(locals.user,name,file);
+        console.log(r)
         let error=r.error
         if(!error){
           cookies.delete('user',{ httpOnly: true,

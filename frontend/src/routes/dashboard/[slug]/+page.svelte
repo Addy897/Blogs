@@ -93,7 +93,7 @@
 		
 	{:then md}
 	<div class="hidden">{setMarkdown(md)}</div>
-	<EditBlog bind:markdownContent bind:markdownTitle bind:markdownMode cover_photo={blog.cover_photo} />
+	<EditBlog bind:markdownContent bind:markdownTitle bind:markdownMode cover_photo={blog.cover_photo} markdownDescription={blog.markdownDescription} />
 	<section class="flex flex-col justify-center items-center w-full gap-5 pt-24">
 		{#if markdownMode}
 			<form class="flex flex-col items-center w-full p-4">
