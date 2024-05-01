@@ -1,3 +1,4 @@
+
 from django.http import HttpResponse,HttpRequest,JsonResponse,HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
@@ -23,9 +24,9 @@ def setUserBlog(request:HttpRequest):
                 if(len(euser)!=1):
                     raise ValueError("No EUsers Found")
                 title=data.get('title')
+                description=data.get('description')
                 content=data.get('content')
-                cover=data.get('coverPhoto')
-                print(cover)
+                cover=data.get('cover_photo')
                 if(cover==None):
                     cover="https://flowbite.com/docs/images/blog/image-1.jpg"
                 topic=data.get('topic')
@@ -33,19 +34,12 @@ def setUserBlog(request:HttpRequest):
                 md=content
 
                 content=m2h(content)
-                date = timezone.now()
                 BlogData=Blog.objects.filter(title=title);
                 if(len(BlogData)==1):
                     raise ValueError("Blog with same Title!!")
-                
-                refId=salted_hmac(settings.HASH_KEY,str(user.get('uid'))+title).hexdigest()
-                email=user.get('email',None)
-                if(not email):
-                    email=user.get('providerData',[{}])[0].get('email')
-                
-                d=Blog(uid=user.get("uid"),title=title,name=user.get('displayName'),refId=refId,date=date,content=content,status=status,md=md,pfPhoto=euser[0].pfPhoto,level=euser[0].account_level,topic=topic,coverPhoto=cover)
+                d=Blog(author=euser[0],title=title,description=description,content=content,status=status,md=md,topic=topic,cover_photo=cover)
                 d.save()
-                return JsonResponse({"error":False,"refId":refId,"status":status})
+                return JsonResponse({"error":False,"ref_id":d.ref_id,"status":status})
                 
                 
             except ValueError as e:
@@ -66,16 +60,15 @@ def getBlog(request:HttpRequest):
             try:
                 title=data.get('title')
                 if(title):
-                    BlogData=Blog.objects.filter(status="3",title=title)
+                    BlogData=Blog.objects.filter(status="Published",title=title)
                     if(len(BlogData)<1):
                         raise ValueError("No Blogs Found!!")
                     
                     
-                    return JsonResponse({"response":BlogData.values()[0]})
+                    return JsonResponse({"response":BlogData[0].to_json()})
                 
                 
             except ValueError as e:
-                print(e)
                 return(JsonResponse({"error":True,"errorMessage":str(e)}))
         else:
             return JsonResponse({"error":True,"errorMessage":"Invalid Token"})
@@ -91,20 +84,51 @@ def getAllBlogs(request:HttpRequest):
             try:
                 keyword=data.get('title')
                 if(keyword and keyword!='null'):
-                    BlogData=Blog.objects.filter(status="3",title__icontains=keyword).order_by('-likes')
+                    BlogData=Blog.objects.filter(status="Published",title__icontains=keyword)
                     if(len(BlogData)<1):
                         raise ValueError("No Blogs Found!!")
                     
                     
-                    return JsonResponse({"response":list(BlogData.values())})
+                    return JsonResponse({"response":[i.to_json() for i in BlogData.values()]})
                 else:
-                    BlogData=Blog.objects.filter(status="3").order_by('-likes')
+                    BlogData=Blog.objects.filter(status="Published").order_by('-likes')
                     
-                    return JsonResponse({"response":list(BlogData.values())})
+                    return JsonResponse({"response":list(BlogData.values("title","description","cover_photo","date","likes","ref_id","views","topic"))})
                 
             except ValueError as e:
                 print(e)
                 return(JsonResponse({"error":True,"errorMessage":str(e)}))
+        else:
+            return JsonResponse({"error":True,"errorMessage":"Invalid Token"})
+    else:
+        return HttpResponseNotFound()
+
+@csrf_exempt
+def getUserBlog(request:HttpRequest):
+    if(request.method=="POST"):
+        if(request.headers.get("api-token")==settings.API_TOKEN):
+            data:dict=json.loads(request.body.decode())
+           
+            try:
+                user=EUsers.objects.filter(email=data.get("email"))
+                if(len(user)!=1):
+                    raise ValueError("No EUsers Found")
+                title=data.get('title')
+                
+                if(title!="null"):
+                    BlogData=Blog.objects.filter(author=user[0],title=title);
+                    if(len(BlogData)>0):
+                        return JsonResponse({"response":[i.to_json() for i in BlogData]})
+
+                else:
+                    BlogData=Blog.objects.filter(author=user[0]);
+                    if(len(BlogData)>0):
+                        return JsonResponse({"response":list(BlogData.values("title","description","cover_photo","date","likes","ref_id","views","status"))})
+                return JsonResponse({"response":None})
+
+            except ValueError as e:
+                return(JsonResponse({"error":True,"errorMessage":str(e)}))
+            
         else:
             return JsonResponse({"error":True,"errorMessage":"Invalid Token"})
     else:
@@ -119,20 +143,23 @@ def addGoogle(request:HttpRequest):
             try:
                 guser=data.get('guser')
                 uid=guser.get('uid')
+                uid=uuid.uuid5(uuid.NAMESPACE_DNS,uid)
+
                 user=EUsers.objects.filter(uid=uid)
                 if(len(user)>0):
-                    return JsonResponse(user[0].toJson())
+                    return JsonResponse(user[0].to_json())
                 
-                passHash=make_password(guser.get('uid')+guser.get("email"))
-                user=EUsers(uid=guser.get('uid'),email=guser.get("email"),name=guser.get("displayName"),password=passHash,pfPhoto=guser.get('photoURL'),access_level="2")
+                passHash=make_password(str(uid)+guser.get("email"))
+                user=EUsers(uid=uid,email=guser.get("email"),name=guser.get("displayName"),password=passHash,pf_photo=guser.get('photoURL'),access_level="2")
                 user.save()
             except IntegrityError as e:
+                print(e)
                 return(JsonResponse({"Error":True,"message":str(e)}))
             except ValueError as e:
-                
+                print(e)
                 return(JsonResponse({"Error":True,"message":str(e)}))
             
-            return JsonResponse(user.toJson())
+            return JsonResponse({"user":user.to_json()})
         else:
             return JsonResponse({"Error":True,"message":"Invalid Token"})
     else:
@@ -148,17 +175,19 @@ def register(request:HttpRequest):
            
             try:
                 passHash=make_password(data.get("password"))
-                uid=str(uuid.uuid5(uuid.NAMESPACE_DNS,data.get('name')+str(timezone.now())+passHash))
                 phone=data.get("phone")
-                user=EUsers(uid=uid,email=data.get("email"),phone=phone,name=data.get("name"),password=passHash)
+                print(phone,data)
+                user=EUsers(email=data.get("email"),phone=phone,name=data.get("name"),password=passHash)
                 user.save()
             except IntegrityError as e:
+                print(e)
                 return(JsonResponse({"Error":True,"message":str(e)}))
             except ValueError as e:
+                print(e)
                 
                 return(JsonResponse({"Error":True,"message":str(e)}))
             
-            return JsonResponse(user.toJson())
+            return JsonResponse(user.to_json())
         else:
             return JsonResponse({"Error":True,"message":"Invalid Token"})
     else:
@@ -192,7 +221,7 @@ def login(request:HttpRequest):
                 
                 return(JsonResponse({"Error":True,"message":str(e)}))
             
-            return JsonResponse(user.toJson())
+            return JsonResponse(user.to_json())
         else:
             return JsonResponse({"Error":True,"message":"Invalid Token"})
     else:
@@ -210,32 +239,30 @@ def updateLikes(request:HttpRequest):
             try:
                 user=data.get("user")
                 dbUser=EUsers.objects.filter(uid=user.get('uid'))
-                refId=data.get('refId')
+                ref_id=data.get('ref_id')
                 if(len(dbUser)):
-                    if(len(dbUser.filter(likedPosts__icontains=refId))):
-                        post=Blog.objects.filter(refId=refId)
+                    if(len(dbUser.filter(likedPosts__icontains=ref_id))):
+                        post=Blog.objects.filter(ref_id=ref_id)
                         if(post):
                             post=post[0]
                             if(post.likes>0):
                                 post.likes-=1
                             post.save()
-                            dbUser[0].likedPosts.remove(refId)
+                            dbUser[0].likedPosts.remove(ref_id)
                             dbUser[0].save()
                     else:
-                        post=Blog.objects.filter(refId=refId)
+                        post=Blog.objects.filter(ref_id=ref_id)
                         if(post):
                             post=post[0]
                             post.likes+=1
                             post.save()
-                            dbUser[0].likedPosts.append(refId)
-                            print(dbUser[0].likedPosts)
+                            dbUser[0].likedPosts.append(ref_id)
                             dbUser[0].save()
                     
                 else:
                     raise ValueError("No Users Found!!")
-                return JsonResponse(dbUser[0].toJson())
+                return JsonResponse(dbUser[0].to_json())
             except Exception as e:
-                print(e)
                 return JsonResponse({"error":True,"errorMessage":str(e)})
     else:
         return HttpResponseNotFound()
@@ -247,9 +274,9 @@ def incView(request:HttpRequest):
             data:dict=json.loads(request.body.decode())
             try:
                 
-                refId=data.get('refId')
-                if(refId):
-                        post=Blog.objects.filter(title=refId)
+                ref_id=data.get('ref_id')
+                if(ref_id):
+                        post=Blog.objects.filter(title=ref_id)
                         if(post):
                             post=post[0]
                             post.views+=1
@@ -261,7 +288,6 @@ def incView(request:HttpRequest):
                     raise ValueError("No Post Found!!")
                 return JsonResponse({"error":False})
             except Exception as e:
-                print(e)
                 return JsonResponse({"error":True,"errorMessage":str(e)})
     else:
         return HttpResponseNotFound()
@@ -279,14 +305,14 @@ def saveProfile(request:HttpRequest):
                 if(len(dbUser)):
                     
                     dbUser[0].name=name
-                    dbUser[0].pfPhoto=file
+                    if(file!=None):
+                        dbUser[0].pf_photo=file
                     dbUser[0].save()
                     
                 else:
                     raise ValueError("No Users Found!!")
-                return JsonResponse(dbUser[0].toJson())
+                return JsonResponse(dbUser[0].to_json())
             except Exception as e:
-                print(e)
                 return JsonResponse({"error":True,"errorMessage":str(e)})
     else:
         return HttpResponseNotFound()
@@ -302,24 +328,21 @@ def addComment(request:HttpRequest):
                 comment=data.get('comment')
                 title=data.get('title')
                 if(len(dbUser)):
-                    
                     post=Blog.objects.filter(title=title)
                     if(post):
-                        date=timezone.now()
-                        cid=str(uuid.uuid5(uuid.NAMESPACE_DNS,dbUser[0].uid+str(date)))
-                        c=Comment.objects.filter(refId=post[0].refId,uid=dbUser[0].uid)
+                        c=post[0].comments.filter(user=dbUser[0])
                         if(len(c)>=10):
                             raise ValueError("Maximum Comment Limit Reached")
                         post=post[0]
-                        commentData=Comment(cid=cid,uid=dbUser[0].uid,name=dbUser[0].name,pfPhoto=dbUser[0].pfPhoto,comment=comment,refId=post.refId,date=date)
+                        commentData=Comment(user=dbUser[0],comment=comment)
                         commentData.save()
-                        post.comments.append(commentData.toJson())
+                        post.comments.add(commentData)
                         post.save()
                     
                     
                 else:
                     raise ValueError("No Users Found!!")
-                return JsonResponse(dbUser[0].toJson())
+                return JsonResponse(dbUser[0].to_json())
             except Exception as e:
                 print(e)
                 return JsonResponse({"error":True,"errorMessage":str(e)})
@@ -340,9 +363,9 @@ def getUserDraft(request:HttpRequest):
                     raise ValueError("No EUsers Found")
                 title=data.get('title')
                 if(title!="null"):
-                    BlogData=Blog.objects.filter(uid=user[0].uid,title=title);
+                    BlogData=Blog.objects.filter(author=user[0],title=title);
                     if(len(BlogData)<1):
-                        res=None
+                        raise ValueError("No Blog Given!!")
                     else:
                         res=BlogData[0].md
                 else:
@@ -354,7 +377,6 @@ def getUserDraft(request:HttpRequest):
                 
                 
             except ValueError as e:
-                print(e)
                 return(JsonResponse({"error":True,"errorMessage":str(e)}))
             
         else:
@@ -374,18 +396,18 @@ def editUserBlog(request:HttpRequest):
                 if(len(euser)!=1):
                     raise ValueError("No EUsers Found")
                 md=data.get('md')
-                refId=data.get('refId')
+                ref_id=data.get('ref_id')
                 content=m2h(md)
                 date=timezone.now()
-                BlogData=Blog.objects.filter(uid=euser[0].uid,refId=refId);
+                BlogData=Blog.objects.filter(author=euser[0],ref_id=ref_id);
                 if(len(BlogData)<1):
-                    raise ValueError("No Blog with same Title!!")
+                    raise ValueError("No Blog with Title!!")
                 BlogData[0].md=md
                 BlogData[0].date=date
                 BlogData[0].content=content
                 BlogData[0].save()
                 
-                return JsonResponse({"error":False,"refId":refId})
+                return JsonResponse({"error":False,"ref_id":ref_id})
                 
                 
             except ValueError as e:
@@ -407,25 +429,24 @@ def publishUserBlog(request:HttpRequest):
                 euser=EUsers.objects.filter(email=user.get("email"))
                 if(len(euser)!=1):
                     raise ValueError("No EUsers Found")
-                refId=data.get('refId')
-                if(euser[0].access_level=="3"):
-                    bd=Blog.objects.filter(refId=refId);
+                ref_id=data.get('ref_id')
+                if(euser[0].access_level=="Admin"):
+                    bd=Blog.objects.filter(ref_id=ref_id);
                     if(len(bd)<1):
                         raise ValueError("No Blog with same Title!!")
-                    bd[0].status="3"
-                    print(bd[0].status)
+                    bd[0].status="Published"
                     bd[0].save()
-                    return JsonResponse({"error":False,"refId":refId})
+                    return JsonResponse({"error":False,"ref_id":ref_id})
                 else:
-                    BlogData=Blog.objects.filter(uid=euser[0].uid,refId=refId);
+                    BlogData=Blog.objects.filter(author=euser,ref_id=ref_id);
                     if(len(BlogData)<1):
                         raise ValueError("No Blog with same Title!!")
                 
-                    BlogData[0].status="2"
+                    BlogData[0].status="InReview"
 
                     BlogData[0].save()
                     
-                return JsonResponse({"error":False,"refId":refId})
+                return JsonResponse({"error":False,"ref_id":ref_id})
                 
                 
             except ValueError as e:
@@ -444,30 +465,36 @@ def getForReviewBlog(request:HttpRequest):
            
             try:
                 u=data.get('user')
-                user=EUsers.objects.filter(email=u.get('email'),uid=u.get('uid'))
+                user=EUsers.objects.filter(uid=u.get('uid'))
 
-                if(len(user)!=1 and user[0].access_level!="3"):
+                if(len(user)!=1 and user[0].access_level!="Admin"):
+                    print(user[0])
                     raise ValueError("No EUsers Found")
                 title=data.get('title')
                 
                 if(title!="null"):
-                    BlogData=Blog.objects.filter(status="2",title=title);
+                    BlogData=Blog.objects.filter(status="InReview",title=title)
+                    if(len(BlogData)>0):
+                        return JsonResponse({"response":BlogData[0].to_json()})
+                    else:
+                        raise ValueError("No Blog Found")
+                   
                 else:
-                    BlogData=Blog.objects.filter(status="2");
+                    BlogData=Blog.objects.filter(status="InReview");
+                    if(len(BlogData)>0):
+                        return JsonResponse({"response":list(BlogData.values("title","description","cover_photo","date","likes","ref_id","views","status"))})
+                    else:
+                        raise ValueError("No Blog Found")
                 
-                if(len(BlogData)<1):
-                    res=None
-                else:
-                    res=[]
-                    for i in BlogData:
-                        res.append(i.toJson())
+               
                     
-                return JsonResponse({"response":res})
                 
                 
             except ValueError as e:
                 print(e)
                 return(JsonResponse({"error":True,"errorMessage":str(e)}))
+            except Exception as e:
+                print(f"\n\nError: {str(e)} \n\n")
             
         else:
             return JsonResponse({"error":True,"errorMessage":"Invalid Token"})
@@ -484,42 +511,15 @@ def removeComment(request:HttpRequest):
                 dbUser=EUsers.objects.filter(uid=data.get('cuid'))
                 if(len(dbUser)):
                     
-                    cmnt=Comment.objects.filter(uid=dbUser[0].uid,cid=cid)
+                    cmnt=Comment.objects.filter(user=dbUser[0],cid=cid)
                     if(cmnt):
                         cmnt=cmnt[0]
-                        post=Blog.objects.filter(refId=cmnt.refId)
-                        it=[]
-                        for v in post[0].comments:
-                            if(str(v.get('cid'))==str(cmnt.cid)):
-                                continue
-                            it.append(v)
-                        post=list(Blog.objects.filter(refId=cmnt.refId).all())
-
-                        post[0].comments=it
-                        post[0].save()
                         cmnt.delete()
-                        
-
-                        
-
-
                         return JsonResponse({"error":False})
 
-
-                        
-                    '''else:
-                        post=Blog.objects.filter(refId=refId)
-                        if(post):
-                            post=post[0]
-                            post.likes+=1
-                            post.save()
-                            dbUser[0].likedPosts.append(refId)
-                            print(dbUser[0].likedPosts)
-                            dbUser[0].save()'''
-                    
                 else:
                     raise ValueError("No Users Found!!")
-                return JsonResponse(dbUser[0].toJson())
+                return JsonResponse(dbUser[0].to_json())
             except Exception as e:
                 print(e)
                 return JsonResponse({"error":True,"errorMessage":str(e)})
