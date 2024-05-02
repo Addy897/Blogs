@@ -1,22 +1,9 @@
 <script>
     export let draft;
     export let user;
-    import { browser } from "$app/environment"
 	import { goto } from "$app/navigation";
 
-    function getImg(el) {
-        let html;
-        if (browser) {
-            html = document.createElement('html');
-            html.innerHTML = el;
-            let imgs = html.getElementsByTagName("img");
-            if (imgs.length) {
-                return String(imgs[0].src);
-            } else {
-                return "https://flowbite.com/docs/images/blog/image-1.jpg";
-            }
-        }
-    }
+    
 
     const like = (e, l, ref_id) => {
         if (user) {

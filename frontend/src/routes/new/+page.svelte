@@ -223,6 +223,7 @@ function handleCoverPhoto(event) {
       <h2 class="text-lg font-bold mb-2">Markdown Syntax Help</h2>
       <p>Heading: # Your heading text (# is largest ## is 2nd largest and so on)</p>
       <p>Image: ![Alt text](image-url)</p>
+      <p>Uploaded Image: ![Image1] (Upload the image and to place it use the syntax. 'Image1' corresponds to image uploaded first and respectively )</p>
       <p>Link: [Link text](link-url)</p>
       <p>Bold: **Your bold text**</p>
       <p>Italic: *Your italic text*</p>
