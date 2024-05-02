@@ -64,7 +64,14 @@
             <section class="flex flex-col justify-center items-center w-full">
                 <form class="flex flex-col w-full" method="post"
                 action="?/login"
-                use:enhance>
+                use:enhance={() => {
+                    logging = true;
+            
+                    return async ({ update }) => {
+                        await update();
+                        logging = false;
+                    };
+                }}>
                     <div class="mb-3 pt-3 rounded bg-gray-200">
                         <label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="email">Email</label>
                         <input type="text" id="email" name="email" class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3">
@@ -123,7 +130,14 @@
             <section class="mt-10">
                 <form class="flex flex-col" method="post"
                 action="?/signup"
-                use:enhance>
+                use:enhance={() => {
+                    logging = true;
+            
+                    return async ({ update }) => {
+                        await update();
+                        logging = false;
+                    };
+                }}>
                     <div class="mb-6 pt-3 rounded bg-gray-200">
                         <label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="name">Name</label>
                         <input type="text" id="name" name="name" class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3" required>

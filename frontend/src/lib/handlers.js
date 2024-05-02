@@ -1,5 +1,6 @@
 
 import { BACKEND_URL } from "$env/static/private"
+import { API_TOKEN } from "$env/static/private"
 
 export class handlers {
     /*
@@ -117,7 +118,7 @@ static async addGoogle(guser){
       method: "Post",
       headers: {
         'Accept': 'application/json',
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       },
       body: JSON.stringify({
         'guser':guser
@@ -146,7 +147,7 @@ static async addGoogle(guser){
         method: "Post",
         headers: {
           'Accept': 'application/json',
-          'api-token': 'random',
+          'api-token': API_TOKEN,
         },
         body: JSON.stringify({
           "email": details.email,
@@ -179,7 +180,7 @@ static async addGoogle(guser){
         method: "Post",
         headers: {
           'Accept': 'application/json',
-          'api-token': 'random',
+          'api-token': API_TOKEN,
         },
         body: JSON.stringify({
           "email": email,
@@ -204,7 +205,7 @@ static async addGoogle(guser){
     await fetch(BACKEND_URL + "getUserBlog/", {
       method: "POST",
       headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       },
       
       body: JSON.stringify({
@@ -226,7 +227,7 @@ static async addGoogle(guser){
     await fetch(BACKEND_URL + "setUserBlog/", {
       method: "POST",
       headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       },
       body: JSON.stringify({
         'user': user,
@@ -253,7 +254,7 @@ static async addGoogle(guser){
     let r = { code: false }
     const res = await fetch(BACKEND_URL + "updateLikes/", {
       method: "POST", headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       }, body: JSON.stringify({
         "ref_id": String(ref_id),
         "user": user
@@ -267,7 +268,7 @@ static async addGoogle(guser){
     let r = { code: false }
     const res = await fetch(BACKEND_URL + "incView/", {
       method: "POST", headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       }, body: JSON.stringify({
         "ref_id": ref_id
       })
@@ -282,7 +283,7 @@ static async addGoogle(guser){
     let r = { error: true }
     const res = await fetch(BACKEND_URL + "saveProfile/", {
       method: "POST", headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       }, body: JSON.stringify({
         "user":user,
         "name": name,
@@ -300,7 +301,7 @@ static async addGoogle(guser){
     await fetch(BACKEND_URL + "getBlog/", {
       method: "POST",
       headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       },
       body: JSON.stringify({
         'title':title,
@@ -320,7 +321,7 @@ static async addGoogle(guser){
     await fetch(BACKEND_URL + "getAllBlogs/", {
       method: "POST",
       headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       },
       body: JSON.stringify({
         'title':String(title),
@@ -343,7 +344,7 @@ static async addGoogle(guser){
     await fetch(BACKEND_URL + "getUserDraft/", {
       method: "POST",
       headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       },
       
       body: JSON.stringify({
@@ -366,7 +367,7 @@ static async addGoogle(guser){
     let r = { code: false }
     const res = await fetch(BACKEND_URL + "addComment/", {
       method: "POST", headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       }, body: JSON.stringify({
         "comment":comment,
         "user": user,
@@ -381,7 +382,7 @@ static async addGoogle(guser){
     let r = { error: false }
     const res = await fetch(BACKEND_URL + "publishUserBlog/", {
       method: "POST", headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       }, body: JSON.stringify({
         "ref_id": String(ref_id),
         "user": user
@@ -395,7 +396,7 @@ static async addGoogle(guser){
     let r = { error: false }
     const res = await fetch(BACKEND_URL + "editUserBlog/", {
       method: "POST", headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       }, body: JSON.stringify({
         "ref_id": String(ref_id),
         "md": md,
@@ -412,7 +413,7 @@ static async addGoogle(guser){
     await fetch(BACKEND_URL + "getForReviewBlogs/", {
       method: "POST",
       headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       },
       
       body: JSON.stringify({
@@ -434,7 +435,7 @@ static async addGoogle(guser){
     let r = { code: false }
     await fetch(BACKEND_URL + "removeComment/", {
       method: "POST", headers: {
-        'api-token': 'random',
+        'api-token': API_TOKEN,
       }, body: JSON.stringify({
         "cid": cid,
         "cuid":cuid

@@ -4,17 +4,22 @@
   <script>
 	export let data;
 	export let form;
-	import { browser } from "$app/environment";
+
 	import { enhance } from "$app/forms";
 	import { goto } from "$app/navigation";
 	import ShowLoading from "$lib/components/showLoading.svelte";
   
 	let Pages = ["My Blogs", "New Blog",'Profile', "Logout"];
+	let email=data.user.email || data.user.phone;
+	let name=data.user.displayName;
+	let pf_photo=data.user.pf_photo;
+	let cover_photo=null;
+	let currentPage = Pages[0];
+	let saving =false;
+
 	if (data && data.extra) {
-	  Pages = ["My Blogs", "New Blog", "For Review","Profile", "Logout"];
+	  Pages = ["My Blogs", "New Blog","Profile", "For Review","Logout"];
 	}
-  
-	let currentPage = Pages[3];
 	$: if(currentPage==="New Blog" && data.user.access_level !== "Read"){
 		goto("/new")
 	}
@@ -22,13 +27,6 @@
 	  currentPage = p;
 	}
   
-	function getText(content) {
-	  if (browser && window) {
-		const el = window.document.createElement('html');
-		el.innerHTML = content;
-		return el.innerText;
-	  }
-	}
   
 	function getColor(status) {
 	  if (status === "Draft") {
@@ -39,10 +37,7 @@
 		return "text-green-600";
 	  }
 	}
-	let email=data.user.email || data.user.phone;
-	let name=data.user.displayName;
-	let pf_photo=data.user.pf_photo;
-	let cover_photo=null;
+	
 	const handleCoverPhoto=(event)=>{
 		cover_photo = event.target.files[0]; 
 		if (cover_photo) {
@@ -55,6 +50,7 @@
 
 	}
 	const save = async (e)=>{
+		saving =true
 		let formData = new FormData();
 		formData.append('name',name);
 		if(cover_photo){
@@ -65,12 +61,16 @@
             body:formData
         }).then(async (response)=>{
         	response = await response.json()
-			if(!response.error){
-				window.location.reload()
-			}
+			
+			
+			saving=false
             
             
-        });
+        }).catch((err)=>{
+			form.serror=true
+			form.errormsg=err
+			saving=false;
+		});
 	}	
   </script>
   
@@ -223,7 +223,7 @@
 			{/if}
 		  {/await}
 		
-	  {:else if currentPage === 'Logout'}
+	  {:else if currentPage === Pages[Pages.length-1]}
 		<section class="grid grid-cols-1">
 		  <form
 			action="/login?/logout"
@@ -289,24 +289,26 @@
 			{/await}
 			{/if}
 	  {:else if currentPage === "Profile"}
-	 
+		{#if saving}
+
+		<ShowLoading/>
+		{:else}
 		<section class="flex flex-col justify-center items-center w-full md:w1/2 lg:w-3/4">
 			<form class="flex flex-col w-full gap-2" method="post"
 			enctype="multipart/form-data"
-			use:enhance
 			>
 				<div class="flex flex-row justify-center items-center gap-2" >
 					<img src="{pf_photo}" class="rounded-full bg-gray-200 w-24 h-24" alt="pf_photo" />
 					
 						<label for="profile" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
 						  Change Profile Image
-						  <input type="file" id="profile" accept="image/*" class="hidden" on:change={handleCoverPhoto}>
+						  <input type="file" id="profile" accept="image/*" class="hidden" on:change={handleCoverPhoto} >
 						</label>          
 					
 				</div>	
 				<div class="mb-6 pt-3 rounded bg-gray-200">
 					<label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="phone">Name</label>
-					<input type="text" id="name" name="name" bind:value={name} class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3">
+					<input type="text" id="name" name="name" bind:value={name} class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3" >
 				</div>
 				<div class="mb-3 pt-3 rounded bg-gray-200">
 					<label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="email">Email or Phone</label>
@@ -325,7 +327,7 @@
 				
 			</form>
 		</section>
-	
+		{/if}
 	  {/if}
 	</div>
   </div>
