@@ -40,30 +40,34 @@
 		});
         return md
 	}
-	function save(e) {
+	async function save(e) {
 		blog.content = marked(markdownContent);
-		fetch('?/setMD', {
+		await fetch('?/setMD', {
 			method: 'POST',
 			body: JSON.stringify({
 				md: markdownContent,
 				ref_id: blog.ref_id
 			})
 		});
-		if (browser) {
-			window.location.reload();
+		if(e!=="re"){
+			if(browser){
+				window.location.reload()
+			}
 		}
 	}
-	const pub = (e) => {
-        save(e)
-		fetch('?/pub', {
+	const pub = async (e) => {
+		loading =true;
+        await save("re")
+		await fetch('?/pub', {
 			method: 'POST',
 			body: JSON.stringify({
 				ref_id: blog.ref_id
 			})
 		});
-		Edit = false;
+		
+		loading = false
 		if (browser) {
-			window.location.href = '/dashboard';
+			window.location.reload();
 		}
 	};
 	const rpub = (e) => {

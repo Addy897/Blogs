@@ -59,7 +59,7 @@
       helpVisible = !helpVisible;
     };
     
-    $: blog ={author:{name:$loginStore.userName},cover_photo:cover_photo,date:new Date().getDate(),title:markdownTitle,description:markdownDescription,content:htmlContent,topic:topic}
+    $: blog ={author:{name:$loginStore.userName},cover_photo:cover_photo,date:new Date().getDate(),title:markdownTitle,description:markdownDescription,content:htmlContent}
 
     
   </script>
@@ -113,9 +113,6 @@
     {/if}
     {#if markdownMode}
     <BlogView blog={blog}/>
-    <div class="w-1/2"><img class="rounded-xl" src={cover_photo} alt="cover_photo"/></div>
-        <h1 class="underline">{markdownTitle}</h1>
-      <div class="preview p-4 w-full sm:w-auto">{@html htmlContent}</div>
     {:else}
       <form class="flex flex-col items-center w-full p-4">
         <input type="text" placeholder="Title" bind:value={markdownTitle} class="mb-2 p-2 border border-gray-400 rounded" disabled>
