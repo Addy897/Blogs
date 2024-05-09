@@ -394,14 +394,12 @@ def editUserBlog(request:HttpRequest):
                     raise ValueError("No EUsers Found")
                 delta=data.get('delta')
                 ref_id=data.get('ref_id')
-                tag=data.get('tag',"")
                 date=timezone.now()
                 BlogData=Blog.objects.filter(author=euser[0],ref_id=ref_id);
                 if(len(BlogData)<1):
                     raise ValueError("No Blog with Title!!")
                 BlogData[0].delta=str(delta).replace("'","\"")
                 BlogData[0].date=date
-                BlogData[0].tag=tag
                 BlogData[0].save()
                 
                 return JsonResponse({"error":False,"ref_id":ref_id})

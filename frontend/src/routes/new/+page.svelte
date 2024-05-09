@@ -68,7 +68,18 @@
       if(event.srcElement.innerText==="Publish"){
        action="Publish"
       }
-      const data={"cover_photo":iSrc,"topic":topic,"description":blogDescription,"title":blogTitle,"delta":JSON.stringify(delta),"action":action,"tag":tag,"domain":domain}
+      let cUrl;
+      await fetch("new/image",{
+        method:"POST",
+        headers:{ "Content-Type": "application/json" },
+        body:JSON.stringify({cover_photo:iSrc}),
+      }).then(async (response)=>{
+            let resp=await response.json()
+            cUrl=resp.url
+          }).catch((err)=>{
+            cUrl=null
+          })
+      const data={"cover_photo":cUrl,"topic":topic,"description":blogDescription,"title":blogTitle,"delta":JSON.stringify(delta),"action":action,"tag":tag,"domain":domain}
 
         await fetch("new/api/",{
             method:"POST",
@@ -88,7 +99,7 @@
                 show=true;
             }else{
                 error=null
-                timeout=2500;
+                timeout=5000;
                 type="success"
 
                 if(action==="Draft"){

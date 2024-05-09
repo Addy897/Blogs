@@ -46,8 +46,6 @@ export async function POST({request,locals}) {
        }else{
         cover_photo=null;
        }
-    }else{
-        cover_photo=null
     }
     
     for (let i = 0; i < ops.length; i++) {
