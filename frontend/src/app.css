@@ -1,10 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-*{
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ,monospace
-   
-  }
+
   
   /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -959,7 +956,7 @@ pre {
   margin-bottom: 1.6em;
   max-width: 100%;
   overflow: auto;
-  padding: 1em 1.5em;
+  padding: 10%;
   display: block;
   word-wrap: break-word;
 }

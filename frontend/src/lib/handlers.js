@@ -215,14 +215,13 @@ static async addGoogle(guser){
     }).then(async (respo) => {
        response= await respo.json();
         response=response.response
-        
     }).catch((err) => {
       
     })
 
     return ({draft:response})
   }
-  static async setUserBlog(user,title,description, content,cover_photo,status,topic) {
+  static async setUserBlog(user,title,description, delta,cover_photo,status,topic,tag,domain) {
     let r = { error: false }
     await fetch(BACKEND_URL + "setUserBlog/", {
       method: "POST",
@@ -233,9 +232,11 @@ static async addGoogle(guser){
         'user': user,
         'title':title,
         'description':description,
-        'content': content,
+        'delta': delta,
+        'tag': tag,
         'topic': topic,
         'status': status ,
+        'domain': domain ,
         'cover_photo':cover_photo
       })
     }).then(async (respo) => {
@@ -392,14 +393,14 @@ static async addGoogle(guser){
     })
     return r;
   }
-  static async edithUserBlog(user, md,ref_id) {
+  static async edithUserBlog(user, delta,ref_id) {
     let r = { error: false }
     const res = await fetch(BACKEND_URL + "editUserBlog/", {
       method: "POST", headers: {
         'api-token': API_TOKEN,
       }, body: JSON.stringify({
         "ref_id": String(ref_id),
-        "md": md,
+        "delta": delta,
         "user": user
       })
     }).then(async (response)=>{

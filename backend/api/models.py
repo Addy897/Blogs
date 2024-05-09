@@ -1,23 +1,24 @@
 from django.db import models
 from django.utils import timezone
-
 import uuid
 
-# Define choices
 ACCOUNT_LEVELS = [("Premium 1","Premium1"),("Premium 2","Premium2"),("Premium 3","Premium3")]
-
 TOPICS = [("Topic 1","Topic 1"),("Topic 2","Topic 2"),("Topic 3","Topic 3"),("Misc","Misc")]
-
-ACCESS_LEVELS = [
+ACCESS_LEVELS = (
     ("Read","Read"),
     ( "ReadWrite","ReadWrite"),
     ("Admin", "Admin"),
-]
-
+)
 STATUS_LEVELS = [
     ("Draft", "Draft"),
     ("InReview", "InReview"),
     ("Published", "Published"),
+]
+TAGS = [
+    ("All", "All"),
+    ("Mens", "Mens"),
+    ("Female", "Female"),
+    ("LGBTQ", "LGBTQ"),
 ]
 
 class EUsers(models.Model):
@@ -79,14 +80,15 @@ class Blog(models.Model):
     cover_photo = models.TextField(default="https://flowbite.com/docs/images/blog/image-1.jpg")
     topic = models.TextField(max_length=20, choices=TOPICS, default=TOPICS[0][0])
     title = models.TextField(unique=True)
-    content = models.TextField()
+    tag = models.TextField(max_length=20, choices=TAGS, default=TAGS[0][0])
     description = models.TextField()  
+    domain = models.CharField(max_length=64,blank=True,null=True)  
     status = models.TextField(max_length=20, choices=STATUS_LEVELS, default=STATUS_LEVELS[0][0])
     date = models.DateTimeField(default=timezone.now)
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
     comments = models.ManyToManyField(Comment, related_name='blogs', blank=True)  # M2M relationship with Comment model
-    md = models.TextField()
+    delta = models.TextField()
 
     def __str__(self):
         return self.title
@@ -108,8 +110,10 @@ class Blog(models.Model):
             "cover_photo": self.cover_photo,
             "topic": self.topic,
             "title": self.title,
-            "content": self.content,
+            "tag": self.tag,
+            "delta": self.delta,
             "description": self.description,
+            "domain": self.domain,
             "status": self.status,
             "date": str(self.date),
             "views": self.views,
@@ -117,7 +121,6 @@ class Blog(models.Model):
             "comments": blog_comments,
         }
     def delete(self, *args, **kwargs):
-        # Remove this comment from all related Blog instances
-        for blog in self.comments:
+        for blog in self.comments.all():
             blog.remove(self)
         super().delete(*args, **kwargs)

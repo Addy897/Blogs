@@ -2,7 +2,8 @@
     export let draft;
     export let user;
 	import { goto } from "$app/navigation";
-
+    import Toasts from "./toast/Toasts.svelte";
+  import { addToast } from "./toast/store.js";
     
 
     const like = (e, l, ref_id) => {
@@ -28,7 +29,36 @@
             return l;
         }
     }
-
+    const copy = (value) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(value);
+    } else if (window.clipboardData && window.clipboardData.setData) {
+      window.clipboardData.setData("Text", value);
+    } else if (
+      document.queryCommandSupported &&
+      document.queryCommandSupported("copy")
+    ) {
+      var textarea = document.createElement("textarea");
+      textarea.textContent = value;
+      // Prevent scrolling to bottom of page in MS Edge
+      textarea.style.position = "fixed";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+      } catch (ex) {
+        console.warn("Copy to clipboard failed.", ex);
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+    addToast({
+      message: "Share Link Copied",
+      type: "success",
+      dismissible: true,
+      timeout: 3000,
+    });
+  };
     
     draft.link="/"+draft.title;
 </script>
@@ -37,10 +67,10 @@
         cursor: pointer;
     }
 </style>
-
+<Toasts/>
 <div class="bg-white flex flex-col rounded-lg shadow-md overflow-hidden transition-transform duration-500 transform hover:scale-105 gap-2 p-2">
-    
     <a href="{draft.link}">
+        <span class=" px-2 absolute text-yellow-300 font-bold font-mono "><p class="bg-[#00000050] px-5 rounded-xl">{draft.tag}</p></span>
         <img src={draft.cover_photo} alt="{draft.title}" class="h-48 w-full object-cover rounded-xl">
     </a>
     <div class="flex flex-row gap-4">
@@ -51,7 +81,7 @@
         Verfied
     </div>
     <div class=" rounded-full p-1 px-4 text-center text-nowrap text-gray-500 border-2 border-gray-500 flex flex-row justify-center items-center gap-2" >
-        Case-Study
+        {draft.domain||"Case-Study"}
     </div></div>
     <div class="p-4">
         <a href="{draft.link}" class="text-gray-900 font-bold text-xl md:text-2xl lg:text-3xl mb-2 hover:text-blue-700 transition duration-300">{draft.title}</a>
@@ -70,6 +100,7 @@
         </div>
         <div class="flex justify-between items-center">
             <a href="{draft.link}" class="text-blue-700 hover:text-blue-800 font-medium transition duration-300">Read more</a>
+            <div class="flex flex-row justify-center items-center gap-2">
             <button
                 class="flex items-center text-gray-700 hover:text-red-500 focus:outline-none transition duration-300"
                 on:click={(e) => {
@@ -80,6 +111,17 @@
                 <i class={user && user.likedPosts.includes(draft.ref_id) ? "fa fa-heart text-red-500" : "fa-regular fa-heart"}></i>
                 <span class="ml-1">{draft.likes}</span>
             </button>
+            <i
+          class="fa fa-share"
+          on:click={() => {
+            copy(window.location.origin+encodeURI(draft.link));
+          }}
+          on:keydown={() => {
+            copy(draft.link);
+          }}
+          tabindex="-1"
+          role="button"
+        ></i></div>
         </div>
        
     </div>

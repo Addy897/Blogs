@@ -1,5 +1,28 @@
 <script>
+	import { onMount } from "svelte";
+
     export let blog
+    let quill;
+    let htmlContent;
+    let delta;
+    onMount(async ()=>{
+        const {default:Quill} = await import('quill');
+        var tempCont = document.createElement("div");
+        quill=new Quill(tempCont)
+        if(typeof(blog.delta)==='string'){
+            delta=JSON.parse(blog.delta)
+        if(delta.ops){
+            delta=delta.ops
+        }
+        }else{
+            delta=blog.delta
+
+
+        }
+        quill.setContents(delta)
+        htmlContent=quill.getSemanticHTML();
+
+    })
 </script>
 
 <div class="flex justify-center mx-auto max-w-screen-xl px-2">
@@ -34,7 +57,7 @@
                 <div
                     class=" rounded-full p-1 px-4 text-center text-nowrap text-gray-500 border-2 border-gray-500 flex flex-row justify-center items-center gap-2"
                 >
-                    Case-Study
+                    {blog.domain||"Case-Study"}
                 </div>
             </div>
 
@@ -57,7 +80,7 @@
             </div>
         </header>
 
-        <div class="blog">{@html blog.content}</div>
+        <div class="blog ql-editor">{@html htmlContent}</div>
         
     </article>
     

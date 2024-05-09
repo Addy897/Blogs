@@ -38,7 +38,7 @@
 	  }
 	}
 	
-	const handleCoverPhoto=(event)=>{
+	const handleProfileImage=(event)=>{
 		cover_photo = event.target.files[0]; 
 		if (cover_photo) {
 			const reader = new FileReader();
@@ -49,7 +49,7 @@
 		}
 
 	}
-	const save = async (e)=>{
+	const saveProfile = async (e)=>{
 		saving =true
 		let formData = new FormData();
 		formData.append('name',name);
@@ -302,7 +302,7 @@
 					
 						<label for="profile" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
 						  Change Profile Image
-						  <input type="file" id="profile" accept="image/*" class="hidden" on:change={handleCoverPhoto} >
+						  <input type="file" id="profile" accept="image/*" class="hidden" on:change={handleProfileImage} >
 						</label>          
 					
 				</div>	
@@ -323,7 +323,7 @@
 					{/if}
 				</div>
 				
-				<button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded shadow-lg hover:shadow-xl transition duration-200" type="button" on:click={save}>Save</button>
+				<button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded shadow-lg hover:shadow-xl transition duration-200" type="button" on:click={saveProfile}>saveProfile</button>
 				
 			</form>
 		</section>

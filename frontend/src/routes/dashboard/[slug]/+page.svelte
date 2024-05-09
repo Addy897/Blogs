@@ -4,48 +4,44 @@
 	import EditBlog from '$lib/components/editBlog.svelte';
 	import ShowLoading from '../../../lib/components/showLoading.svelte';
 	import BlogView from '../../../lib/components/blogView.svelte';
-
+	import { addToast } from '../../../lib/components/toast/store';
+	import Toasts from '../../../lib/components/toast/Toasts.svelte';
 	export let data;
 	let loading =false;
-	let markdownTitle = '';
-	let markdownContent = null;
-	let markdownMode = false;
+	let blogTitle;
+	let delta;
+	let preview = true;
 	let blog = null;
 	let review = null;
-	$: if (data.blog) {
-		blog = data.blog[0];
-		markdownTitle = blog.title;
+	let changed=false;
+
+	let show=false
+  	let message = null;
+  	let type = "success";
+  	let dismissible = true;
+  	let timeout = 0;
+    $:if(show){
+      addToast({message, type, dismissible, timeout })
+      show=false;
+    }
+
+	if (data.blog) {
+		blog = data.blog;
+		blogTitle = blog.title;
+
+		delta=blog.delta
 	} else if (data.review) {
 		review = data.review;
-        markdownTitle = review.title;
+        blogTitle = review.title;
+
 	}
-	let error=null;
+
 	
-
-	async function allowEdit() {
-		let md=null
-		await fetch('?/getMD', {
-			method: 'POST',
-			body: 'NUll'
-		}).then(async (response) => {
-			let r = await response.json();
-
-			if (r.data) {
-				md = JSON.parse(r.data)[0];
-
-				markdownMode = true;
-			}
-		}).catch((err)=>{
-				error=err
-		});
-        return md
-	}
 	async function save(e) {
-		blog.content = marked(markdownContent);
 		await fetch('?/setMD', {
 			method: 'POST',
 			body: JSON.stringify({
-				md: markdownContent,
+				delta: delta,
 				ref_id: blog.ref_id
 			})
 		});
@@ -57,18 +53,31 @@
 	}
 	const pub = async (e) => {
 		loading =true;
+		if(changed){
         await save("re")
-		await fetch('?/pub', {
+		}
+		let resp=await fetch('?/pub', {
 			method: 'POST',
 			body: JSON.stringify({
 				ref_id: blog.ref_id
 			})
 		});
+		let response=await resp.json() ;
 		
-		loading = false
-		if (browser) {
-			window.location.reload();
+		 response=JSON.parse(response.data)
+		
+		if(response!==-1 && response[0].error){
+			message=response[response[0].error]||"Unknown Error"
+			type="error"
+			show=true
+		}else{
+			message="Published"
+			type="success"
+			show=true
+			blog.status="InReview"
 		}
+		loading = false
+		
 	};
 	const rpub = (e) => {
 		fetch('?/rpub', {
@@ -82,34 +91,26 @@
 			window.location.href = '/dashboard';
 		}
 	};
-	const  setMarkdown=(md)=>{
-		if(!markdownContent){
-			markdownContent=md;
-		}
-	}
+	
 </script>
 
 {#if loading}
 	<ShowLoading/>
-{:else if blog && typeof blog === 'object'}
-	{#await allowEdit()}
-	<ShowLoading/>
-		
-	{:then md}
-	<div class="hidden">{setMarkdown(md)}</div>
-	<EditBlog bind:markdownContent bind:markdownTitle bind:markdownMode cover_photo={blog.cover_photo} markdownDescription={blog.markdownDescription} />
+{:else if blog && typeof blog === 'object'}	
+	<Toasts/>		
+	<EditBlog bind:delta bind:blogTitle bind:preview cover_photo={blog.cover_photo} blogDescription={blog.description} bind:changed />
 	<section class="flex flex-col justify-center items-center w-full gap-5 pt-24">
-		{#if markdownMode}
+		{#if preview}
 			<form class="flex flex-col items-center w-full p-4">
 				<div class="flex justify-between w-full sm:w-auto mb-10">
-					{#if md!==markdownContent || blog.status==="Draft"}
+					{#if changed || blog.status==="Draft"}
 						<button
 							type="button"
 							class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mr-2"
 							on:click={pub}>Publish</button
 						>
 					{/if}
-					{#if md!==markdownContent}
+					{#if changed}
 					<button
 						type="button"
 						class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 ml-2"
@@ -120,7 +121,6 @@
 			</form>
 		{/if}
 	</section>
-	{/await}
 {:else if review && typeof review === 'object'}
 	<section class="flex flex-col justify-center items-center w-full gap-5 py-5">
 		<BlogView blog={review}/>

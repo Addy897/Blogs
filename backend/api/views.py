@@ -3,8 +3,6 @@ from django.http import HttpResponse,HttpRequest,JsonResponse,HttpResponseNotFou
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.db.utils import IntegrityError
-from .m2h import m2h
-from django.utils.crypto import salted_hmac
 from django.contrib.auth.hashers import make_password,check_password
 import json,uuid
 from .validate import parseLoginUser
@@ -24,20 +22,19 @@ def setUserBlog(request:HttpRequest):
                 if(len(euser)!=1):
                     raise ValueError("No EUsers Found")
                 title=data.get('title')
+                BlogData=Blog.objects.filter(title=title);
+                if(len(BlogData)==1):
+                    raise ValueError("Blog with same Title!!")
                 description=data.get('description')
-                content=data.get('content')
+                delta=data.get('delta')
+                tag=data.get('tag')
                 cover=data.get('cover_photo')
                 if(cover==None):
                     cover="https://flowbite.com/docs/images/blog/image-1.jpg"
                 topic=data.get('topic')
+                domain=data.get('domain')
                 status=data.get('status')
-                md=content
-
-                content=m2h(content)
-                BlogData=Blog.objects.filter(title=title);
-                if(len(BlogData)==1):
-                    raise ValueError("Blog with same Title!!")
-                d=Blog(author=euser[0],title=title,description=description,content=content,status=status,md=md,topic=topic,cover_photo=cover)
+                d=Blog(author=euser[0],title=title,description=description,tag=tag,status=status,delta=delta,topic=topic,cover_photo=cover,domain=domain)
                 d.save()
                 return JsonResponse({"error":False,"ref_id":d.ref_id,"status":status})
                 
@@ -93,7 +90,7 @@ def getAllBlogs(request:HttpRequest):
                 else:
                     BlogData=Blog.objects.filter(status="Published").order_by('-likes')
                     
-                    return JsonResponse({"response":list(BlogData.values("title","description","cover_photo","date","likes","ref_id","views","topic"))})
+                    return JsonResponse({"response":list(BlogData.values("title","description","cover_photo","date","likes","ref_id","views","topic","tag","domain"))})
                 
             except ValueError as e:
                 print(e)
@@ -118,12 +115,12 @@ def getUserBlog(request:HttpRequest):
                 if(title!="null"):
                     BlogData=Blog.objects.filter(author=user[0],title=title);
                     if(len(BlogData)>0):
-                        return JsonResponse({"response":[i.to_json() for i in BlogData]})
+                        return JsonResponse({"response":json.dumps(BlogData[0].to_json())})
 
                 else:
                     BlogData=Blog.objects.filter(author=user[0]);
                     if(len(BlogData)>0):
-                        return JsonResponse({"response":list(BlogData.values("title","description","cover_photo","date","likes","ref_id","views","status"))})
+                        return JsonResponse({"response":list(BlogData.values("title","description","cover_photo","date","likes","ref_id","views","status","tag","domain"))})
                 return JsonResponse({"response":None})
 
             except ValueError as e:
@@ -176,25 +173,7 @@ def register(request:HttpRequest):
             try:
                 passHash=make_password(data.get("password"))
                 phone=data.get("phone")
-                email=data.get("email")
-                
-                
-                if (phone and email):
-                    puser=EUsers.objects.filter(phone=phone)
-                    euser=EUsers.objects.filter(email=email)
-                    if(len(puser)>0 or len(euser)>0):
-                        raise ValueError("User Already Exist")
-                elif(phone):
-                    
-                    user=EUsers.objects.filter(phone=phone)
-                    if(len(user)>0):
-                        raise ValueError("User Already Exist")
-                else:
-                    user=EUsers.objects.filter(email=email)
-                    if(len(user)>0):
-                        raise ValueError("User Already Exist")
-                
-
+                print(phone,data)
                 user=EUsers(email=data.get("email"),phone=phone,name=data.get("name"),password=passHash)
                 user.save()
             except IntegrityError as e:
@@ -229,7 +208,7 @@ def login(request:HttpRequest):
                 else:
                     user=EUsers.objects.filter(email=email)
                 if(len(user)!=1):
-                    raise ValueError("No User Found")
+                    raise ValueError("No EUsers Found")
                 user=user[0]
                 passHash=user.password
                 if(not check_password(data.get("password"),passHash)):
@@ -385,7 +364,7 @@ def getUserDraft(request:HttpRequest):
                     if(len(BlogData)<1):
                         raise ValueError("No Blog Given!!")
                     else:
-                        res=BlogData[0].md
+                        res=BlogData[0].delta
                 else:
                     raise ValueError("No Blog Given!!")
                 
@@ -413,16 +392,16 @@ def editUserBlog(request:HttpRequest):
                 euser=EUsers.objects.filter(email=user.get("email"))
                 if(len(euser)!=1):
                     raise ValueError("No EUsers Found")
-                md=data.get('md')
+                delta=data.get('delta')
                 ref_id=data.get('ref_id')
-                content=m2h(md)
+                tag=data.get('tag',"")
                 date=timezone.now()
                 BlogData=Blog.objects.filter(author=euser[0],ref_id=ref_id);
                 if(len(BlogData)<1):
                     raise ValueError("No Blog with Title!!")
-                BlogData[0].md=md
+                BlogData[0].delta=str(delta).replace("'","\"")
                 BlogData[0].date=date
-                BlogData[0].content=content
+                BlogData[0].tag=tag
                 BlogData[0].save()
                 
                 return JsonResponse({"error":False,"ref_id":ref_id})
@@ -444,7 +423,13 @@ def publishUserBlog(request:HttpRequest):
            
             try:
                 user=data.get('user') 
-                euser=EUsers.objects.filter(email=user.get("email"))
+                phone=user.get('phone')
+                email=user.get('email')
+                euser=[]
+                if(phone):
+                    euser=EUsers.objects.filter(phone=phone)
+                elif(email):
+                    euser=EUsers.objects.filter(email=email)
                 if(len(euser)!=1):
                     raise ValueError("No EUsers Found")
                 ref_id=data.get('ref_id')
@@ -456,10 +441,11 @@ def publishUserBlog(request:HttpRequest):
                     bd[0].save()
                     return JsonResponse({"error":False,"ref_id":ref_id})
                 else:
-                    BlogData=Blog.objects.filter(author=euser,ref_id=ref_id);
-                    if(len(BlogData)<1):
-                        raise ValueError("No Blog with same Title!!")
-                
+                    
+                    BlogData=Blog.objects.filter(author=euser[0],ref_id=ref_id).all();
+                    if(not BlogData):
+                        raise ValueError("No Blog with Title!!")
+                    print(BlogData)
                     BlogData[0].status="InReview"
 
                     BlogData[0].save()
@@ -468,6 +454,7 @@ def publishUserBlog(request:HttpRequest):
                 
                 
             except ValueError as e:
+                print(e)
                 return(JsonResponse({"error":True,"errorMessage":str(e)}))
             
         else:
@@ -486,7 +473,6 @@ def getForReviewBlog(request:HttpRequest):
                 user=EUsers.objects.filter(uid=u.get('uid'))
 
                 if(len(user)!=1 and user[0].access_level!="Admin"):
-                    print(user[0])
                     raise ValueError("No EUsers Found")
                 title=data.get('title')
                 
