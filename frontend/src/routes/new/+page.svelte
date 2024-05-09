@@ -68,7 +68,7 @@
       if(event.srcElement.innerText==="Publish"){
        action="Publish"
       }
-      const data={"cover_photo":iSrc,"topic":topic,"description":blogDescription,"title":blogTitle,"delta":JSON.stringify(delta),"action":action,"tag":tag,"domian":domain}
+      const data={"cover_photo":iSrc,"topic":topic,"description":blogDescription,"title":blogTitle,"delta":JSON.stringify(delta),"action":action,"tag":tag,"domain":domain}
 
         await fetch("new/api/",{
             method:"POST",
@@ -91,7 +91,7 @@
                 timeout=2500;
                 type="success"
 
-                if(draft==="Draft"){
+                if(action==="Draft"){
                   message="Saved the Blog to Draft";
                  
                   
