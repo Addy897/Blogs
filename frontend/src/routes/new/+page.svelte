@@ -97,9 +97,10 @@
                 type="error"
                 loading=false;
                 show=true;
+                delta=resp.delta||delta
             }else{
                 error=null
-                timeout=5000;
+                timeout=3000;
                 type="success"
 
                 if(action==="Draft"){
