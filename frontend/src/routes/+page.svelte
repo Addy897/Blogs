@@ -109,7 +109,7 @@ function loadTranslate() {
             
         </div>
         <div class="flex flex-row justify-center">
-            <select id="topic" bind:value={tag} required>
+            <select  class="bg-white" id="topic" bind:value={tag} required>
                 {#each Object.entries(tags) as [index,value] }
                   {#if index===0}
                   <option value="{value}" selected="selected">{value}</option>

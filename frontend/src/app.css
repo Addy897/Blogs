@@ -968,3 +968,6 @@ p > img{
   border-radius: 0.75rem;
   
 } 
+select{
+  background-color: white;
+}
