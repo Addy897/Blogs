@@ -1,6 +1,6 @@
 asgiref
 Django>=4.1.13
-dotenv
+python-dotenv
 psycopg2-binary
 sqlparse
 tzdata
