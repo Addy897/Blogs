@@ -135,11 +135,9 @@
 							{/if}
 						{/each}
 					</div>
-				{:else}
-					<section class="container mx-auto flex justify-center items-center h-60">
-						<div class="text-lg text-gray-600">No blogs found.</div>
-					</section>
-				{/if}
+                    {:else}
+                    <ShowLoading />
+                {/if}
 			{:else}
 				<ShowLoading />
 			{/if}
