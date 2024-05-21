@@ -2,12 +2,13 @@
 <script>
 	import {loginStore} from "./../stores/loginstore"
     import icon from "$lib/images/icon.png"
+	import { browser } from "$app/environment";
     $: isVisible = false;
         const showNav = () => {
         isVisible = !isVisible;
     };
-	let isactive="home";
-
+    
+	let isactive=(browser)?window.location.pathname.substring(1):"home";
     const changeIsActive=(current)=>{isactive=current};
    
     let navButtonClass =
@@ -20,23 +21,7 @@
         <div class="w-1/2 md:w-auto">
            <img src={icon} alt="icon"/>
         </div>
-        <!--
-        <form method="get" class="flex flex-row" action="/?/search">
-            <div class="relative">
-                <input
-                    type="text"
-                    placeholder="Search"
-                    name="keyword"
-                    class="bg-[#FEFFAC] font-mono text-black border-2 shadow-md rounded-xl px-6 py-1 focus:outline-none text-center w-full"
-                />
-                <button
-                    class="absolute left-0 top-0 z-3 mt-3 ml-4 focus:outline-none fa fa-magnifying-glass"
-                >
-                </button>
-            </div>
-        </form>-->
         <div class="md:hidden absolute left-[90%]">
-            <!-- Hamburger -->
             <button
                 id="mobile-menu-button"
                 class="text-black focus:outline-none"
@@ -48,20 +33,20 @@
         <div class="hidden md:flex flex-row justify-center items-center text-xl font-sans gap-5">
             <a
                 href="/"                    
-                class="border-solid  block px-3 py-2 rounded-lg font-medium {isactive!=='home'?"text-black":"text-red-600"}"
+                class="border-solid  block px-3 py-2 rounded-lg font-medium {!isactive.startsWith('home')?"text-black":"text-red-600"}"
                 on:click={()=>{changeIsActive("home")}}
                 >Home</a
             >
             <a
                 href="/about"   
-                class=" border-solid   block px-3 py-2 rounded-lg font-medium {isactive!=='about'?"text-black":"text-red-600"}"
+                class=" border-solid   block px-3 py-2 rounded-lg font-medium {!isactive.startsWith('about')?"text-black":"text-red-600"}"
                 on:click={()=>{changeIsActive("about")}}
                 >About</a
             >
             {#if $loginStore.isLogged}
                 <a
 					href="/dashboard"
-                    class="border-solid   flex flex-row items-center gap-3 justify-center px-3 py-2 rounded-lg font-medium {isactive!=='dashboard'?"text-black":"text-red-600"}"
+                    class="border-solid   flex flex-row items-center gap-3 justify-center px-3 py-2 rounded-lg font-medium {!isactive.startsWith('dashboard')?"text-black":"text-red-600"}"
                     on:click={()=>{changeIsActive("dashboard")}}
                     >{$loginStore.userName}
                         <img
@@ -77,7 +62,7 @@
             {:else}
                 <a 
 					href="/login"
-                    class="  block px-3 py-2 rounded-lg font-medium {isactive!=='login'?"text-black":"text-red-600"}"
+                    class="  block px-3 py-2 rounded-lg font-medium {!isactive.startsWith('login')?"text-black":"text-red-600"}"
                     on:click={()=>{changeIsActive("login")}}
 
                     >Login</a

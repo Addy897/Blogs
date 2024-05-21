@@ -1,4 +1,5 @@
 import { handlers } from '../../lib/handlers'
+import { signJWT } from '../../lib/jwtHadlers'
 
  
 
@@ -19,4 +20,3 @@ export async function load({locals}) {
     
     
 }
-

@@ -58,7 +58,7 @@ class Comment(models.Model):
     cid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(EUsers, on_delete=models.CASCADE, related_name='comments')
     date = models.DateTimeField(default=timezone.now)
-    comment = models.TextField()
+    comment = models.TextField(max_length=1000)
     reports = models.IntegerField(default=0)
     
     def __str__(self):
@@ -87,8 +87,9 @@ class Blog(models.Model):
     date = models.DateTimeField(default=timezone.now)
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
-    comments = models.ManyToManyField(Comment, related_name='blogs', blank=True)  # M2M relationship with Comment model
+    comments = models.ManyToManyField(Comment, related_name='blogs', blank=True)
     delta = models.TextField()
+    reviewer=models.ForeignKey(EUsers, on_delete=models.CASCADE, related_name='reviewer_blogs',blank=True,null=True,default="")
 
     def __str__(self):
         return self.title
@@ -101,7 +102,6 @@ class Blog(models.Model):
             "account_level": self.author.account_level
         } if self.author else None
 
-        # Serialize comments associated with this blog
         blog_comments = [comment.to_json() for comment in self.comments.all()]
 
         return {

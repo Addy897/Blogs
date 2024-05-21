@@ -56,17 +56,18 @@
 		if(cover_photo){
 		formData.append('profile',cover_photo)
 		}
-		await fetch("/dashboard?/saveProfile",{
+		await fetch("/dashboard/saveProfile",{
             method:"POST",
             body:formData
         }).then(async (response)=>{
         	response = await response.json()
 			
-			
+			console.log(response)
 			saving=false
             
             
         }).catch((err)=>{
+			console.log(err)
 			form.serror=true
 			form.errormsg=err
 			saving=false;

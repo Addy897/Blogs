@@ -123,7 +123,6 @@
         if(browser && !error){
             window.location.href="/";
         }
-        
     }
     const handleDraft = async (event) => {
       loading=true;

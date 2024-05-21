@@ -436,6 +436,8 @@ def publishUserBlog(request:HttpRequest):
                     if(len(bd)<1):
                         raise ValueError("No Blog with same Title!!")
                     bd[0].status="Published"
+                    bd[0].reviewer=euser[0]
+
                     bd[0].save()
                     return JsonResponse({"error":False,"ref_id":ref_id})
                 else:
@@ -443,8 +445,8 @@ def publishUserBlog(request:HttpRequest):
                     BlogData=Blog.objects.filter(author=euser[0],ref_id=ref_id).all();
                     if(not BlogData):
                         raise ValueError("No Blog with Title!!")
-                    print(BlogData)
                     BlogData[0].status="InReview"
+                    BlogData[0].reviewer=euser[0]
 
                     BlogData[0].save()
                     
