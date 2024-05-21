@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -75,11 +78,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-POSTGRES_USER="default"
-POSTGRES_HOST="ep-quiet-bread-a18y9t6k-pooler.ap-southeast-1.aws.neon.tech"
-POSTGRES_PASSWORD="L4FunDbMmVy6"
-POSTGRES_DATABASE="verceldb"
-POSTGRES_PORT="5432"
+POSTGRES_USER=os.getenv('POSTGRES_USER')
+POSTGRES_HOST=os.getenv('POSTGRES_HOST')
+POSTGRES_PASSWORD=os.getenv('POSTGRES_PASSWORD')
+POSTGRES_DATABASE=os.getenv('POSTGRES_DATABASE')
+POSTGRES_PORT=os.getenv('POSTGRES_PORT')
 
 DATABASES = {
    'default': {

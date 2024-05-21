@@ -1,9 +1,6 @@
 asgiref
 Django>=4.1.13
-pymarkdown-video
-bleach
-bleach[css]
-markdown
+dotenv
 psycopg2-binary
 sqlparse
 tzdata
