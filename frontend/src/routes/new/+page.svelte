@@ -11,7 +11,7 @@
     let blogTitle = "";
     let blogDescription = "";
     let delta = null;
-    let domain = null;
+    let domain = "General";
     let htmlContent = "";
     let preview = false;
     let f = [];
@@ -69,6 +69,14 @@
        action="Publish"
       }
       let cUrl;
+      if(!blogTitle || ! blogDescription){
+          
+          message="Please Enter Title or Description"
+          type="error"
+          loading=false;
+          show=true;
+          return
+      }
       await fetch("new/image",{
         method:"POST",
         headers:{ "Content-Type": "application/json" },
@@ -80,7 +88,7 @@
             cUrl=null
           })
       const data={"cover_photo":cUrl,"topic":topic,"description":blogDescription,"title":blogTitle,"delta":JSON.stringify(delta),"action":action,"tag":tag,"domain":domain}
-
+          
         await fetch("new/api/",{
             method:"POST",
             headers: { "Content-Type": "application/json" },

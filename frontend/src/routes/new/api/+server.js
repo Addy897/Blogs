@@ -50,7 +50,9 @@ export async function POST({ request, locals }) {
         console.log("POST -> new/api");
 
         let { cover_photo,topic, description, delta, title, action, tag, domain } = requestData;
-
+        if(!title || !description){
+            return new Response(JSON.stringify({ error: true, msg: "No Title or Description!!", delta:{ops: updatedDelta },cover_photo:cover_photo }), { status: 500 });
+        }
         action = (action === "Publish") ? "InReview" : "Draft";
         const updatedDelta = await uploadImagesToCloudinary(JSON.parse(delta));
         const rawResponse = await handlers.setUserBlog(locals.user, title, description, JSON.stringify({ ops: updatedDelta }), cover_photo, action, topic, tag, domain);

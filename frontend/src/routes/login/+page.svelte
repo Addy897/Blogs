@@ -92,7 +92,7 @@
                         {/if}
                     </div>
                     
-                    <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded shadow-lg hover:shadow-xl transition duration-200" type="submit">Sign In</button>
+                    <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-3xl shadow-lg hover:shadow-xl transition duration-200" type="submit">Sign In</button>
                     <button
           class="mt-4 px-4 py-2 w-full justify-center bg-white border-black text-black border flex gap-2 rounded-3xl shadow-lg"
           type="button"
@@ -164,7 +164,7 @@
                         {/if}
                     </div>
                     
-                    <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded shadow-lg hover:shadow-xl transition duration-200" type="submit">Sign In</button>
+                    <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-3xl shadow-lg hover:shadow-xl transition duration-200" type="submit">Sign In</button>
                 </form>
             </section>
         </div>
